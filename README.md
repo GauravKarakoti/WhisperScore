@@ -4,8 +4,7 @@
 ## Contract Address
 | Network  | Address                                                            |
 |----------|--------------------------------------------------------------------|
-| Preview  | `4e0b705bb0da6a48ba41c66478835d2ec7cb82ad7811a4aa9f3fadff0159ae7b` |
-| Preprod  | [PASTE ADDRESS AFTER DEPLOY]                                       |
+| Preview  | `16be13f4d0aa666121fc6be71836e99d88cdbb1ce25e2438c559304d7a9cf10f` |
 
 ## What This Does
 WhisperScore replaces full data disclosure with programmable selective disclosure. A user can prove “my FICO score > 700” or “I have completed ≥ 10 gym sessions this month” without giving away the precise number. A verifier receives only a cryptographic “yes/no” proof that the user’s private value meets the required cutoff.
@@ -33,7 +32,7 @@ WhisperScore replaces full data disclosure with programmable selective disclosur
 Run `npm test` to execute the test suite covering circuit logic and privacy constraints.
 
 ## Initial Idea
-[LEAVE PLACEHOLDER — I will fill this in manually]
+WhisperScore lets users prove they meet a threshold (credit score, income level, health metric, membership tier) to access a service, discount, or loan—without ever revealing the actual number or underlying documents. A verifier (e.g., a lender, gym, insurer) receives only a cryptographic “yes/no” proof that the user’s private value is above (or below) a required cutoff. The user’s data stays encrypted on Midnight’s shielded ledger; the business sees only the proof they need for compliance or business logic.
 
 ## Screenshots
-[LEAVE PLACEHOLDER — I will add compile output and contract address screenshots]
+![Compile Screenshot](./compile.png)

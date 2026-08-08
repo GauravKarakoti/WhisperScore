@@ -16,7 +16,7 @@
     "proof-server:start": "docker compose up -d",
     "proof-server:stop": "docker compose down",
     "clean": "rm -rf contracts/managed .midnight-state.json .midnight-wallet-state",
-    "test": "jest",
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules\" jest",
     "test:e2e": "tsx scripts/e2e-check.ts"
   },
   "dependencies": {
@@ -37,8 +37,10 @@
     "ws": "^8.21.1"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.0.0",
     "@types/ws": "^8.18.1",
+    "ts-jest": "^29.4.12",
     "tsx": "^4.23.1",
     "typescript": "^6.0.3"
   },

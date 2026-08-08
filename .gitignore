@@ -17,6 +17,7 @@ build/
 
 # Contract artifacts
 contracts/managed/
+midnight-level-db
 
 # Deployment info
 deployment.json

@@ -6,7 +6,7 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "compile": "compact compile contracts/hello-world.compact contracts/managed/hello-world",
+    "compile": "for file in contracts/*.compact; do name=$(basename \"$file\" .compact); compact compile \"$file\" \"contracts/managed/$name\"; done",
     "build": "npx tsc --noEmit || true",
     "setup": "npx tsx src/setup.ts",
     "deploy": "npx tsx src/deploy.ts",
@@ -16,7 +16,7 @@
     "proof-server:start": "docker compose up -d",
     "proof-server:stop": "docker compose down",
     "clean": "rm -rf contracts/managed .midnight-state.json .midnight-wallet-state",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "test:e2e": "tsx scripts/e2e-check.ts"
   },
   "dependencies": {
@@ -32,6 +32,7 @@
     "@midnight-ntwrk/midnight-js-utils": "4.1.1",
     "@midnight-ntwrk/wallet-sdk": "1.2.0",
     "@scure/bip39": "2.2.0",
+    "jest": "^30.4.2",
     "rxjs": "^7.8.2",
     "ws": "^8.21.1"
   },
@@ -44,5 +45,10 @@
   "engines": {
     "node": ">=22.0.0"
   },
-  "keywords": ["midnight", "blockchain", "zero-knowledge", "privacy"]
+  "keywords": [
+    "midnight",
+    "blockchain",
+    "zero-knowledge",
+    "privacy"
+  ]
 }

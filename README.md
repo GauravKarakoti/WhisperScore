@@ -1,10 +1,14 @@
 # WhisperScore
-> WhisperScore lets users prove they meet a threshold to access a service without ever revealing the actual number.
+> A decentralized application utilizing Midnight network to provide which lets users prove they meet a threshold to access a service without ever revealing the actual number.
+
+## Live Demo
+[PASTE LIVE URL AFTER DEPLOYING FRONTEND]
 
 ## Contract Address
 | Network  | Address                                                            |
 |----------|--------------------------------------------------------------------|
 | Preview  | `16be13f4d0aa666121fc6be71836e99d88cdbb1ce25e2438c559304d7a9cf10f` |
+| Preprod  | [PASTE YOUR CONTRACT ADDRESS FROM LEVEL 1]                         |
 
 ## What This Does
 WhisperScore replaces full data disclosure with programmable selective disclosure. A user can prove “my FICO score > 700” or “I have completed ≥ 10 gym sessions this month” without giving away the precise number. A verifier receives only a cryptographic “yes/no” proof that the user’s private value meets the required cutoff.
@@ -14,13 +18,17 @@ WhisperScore replaces full data disclosure with programmable selective disclosur
 - What is PRIVATE (private witness, never on-chain): The user's actual value (e.g., their exact credit score or exact number of gym visits).
 - What the user PROVES without revealing: That their private value is greater than or equal to the public threshold, computed securely using a zero-knowledge circuit.
 
+## Privacy Claim
+On-chain observers can see that a transaction was executed and verified against the Compact circuit, but they cannot deduce the specific private inputs used by the user to generate the proof locally. 
+
 ## Tech Stack
-- Midnight network, Compact language, Node.js v22, Docker
+- Midnight network, Compact, Midnight.js SDK, React/Vite, Lace wallet, Node.js v22, Docker
 
 ## Prerequisites
 - Node.js v22
 - Docker daemon running
 - Midnight Compact Compiler
+- Lace wallet installed (configured for Midnight Preprod)
 
 ## Setup
 1. Clone the repository
@@ -36,3 +44,6 @@ WhisperScore lets users prove they meet a threshold (credit score, income level,
 
 ## Screenshots
 ![Compile Screenshot](./compile.png)
+
+## Demo Video
+[PLACEHOLDER — I will add the link after recording]

@@ -111,7 +111,7 @@ export async function createWallet(opts: CreateWalletOptions): Promise<WalletCon
       indexerWsUrl: opts.networkConfig.indexerWS,
     },
     provingServerUrl: new URL(opts.networkConfig.proofServer),
-    relayURL: new URL(opts.networkConfig.node),
+    relayURL: new URL(opts.networkConfig.node.replace(/^http/, 'ws')),
     txHistoryStorage: new NoOpTransactionHistoryStorage(),
     costParameters: { additionalFeeOverhead: 300_000_000_000_000n, feeBlocksMargin: 5 },
   };

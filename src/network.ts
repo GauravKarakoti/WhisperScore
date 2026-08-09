@@ -7,7 +7,7 @@ import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { Buffer } from 'node:buffer';
 import { fileURLToPath } from 'node:url';
-
+import 'dotenv/config';
 import { generateMnemonic, mnemonicToSeedSync, validateMnemonic } from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english.js';
 
@@ -69,9 +69,9 @@ export const NETWORK_CONFIGS: Record<NetworkId, NetworkConfig> = {
   },
   preprod: {
     networkId: 'preprod',
-    indexer:   'https://indexer.preprod.midnight.network/api/v4/graphql',
-    indexerWS: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
-    node:      'wss://rpc.preprod.midnight.network/',
+    indexer:   `https://midnight-preprod.blockfrost.io/api/v0?project_id=${process.env.PROJECT_ID}`,
+    indexerWS: `wss://midnight-preprod.blockfrost.io/api/v0/ws?project_id=${process.env.PROJECT_ID}`,
+    node:      `https://rpc.midnight-preprod.blockfrost.io?project_id=${process.env.PROJECT_ID}`,
     proofServer: 'http://127.0.0.1:6300',
     faucet: 'https://midnight-tmnight-preprod.nethermind.dev',
     composeServices: ['proof-server'],

@@ -12,6 +12,10 @@
     "verbatimModuleSyntax": true,
     "moduleDetection": "force",
     "noEmit": true,
+    
+    /* Interoperability fixes for Vite plugins */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
 
     /* Linting */
     "noUnusedLocals": true,

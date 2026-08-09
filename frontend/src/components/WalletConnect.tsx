@@ -14,9 +14,14 @@ export const WalletConnect: React.FC = () => {
         throw new Error("Lace wallet is not installed or Midnight network is unsupported.");
       }
 
-      const api = await laceConnector.enable();
-      const state = await api.state();
-      setAddress(state.address);
+      // In v4, enable() is replaced by connect(networkId)
+      const api = await laceConnector.connect('preprod');
+      
+      // Destructure the string from the returned object
+      const { unshieldedAddress } = await api.getUnshieldedAddress();
+      
+      // Now you are passing a bare string to state
+      setAddress(unshieldedAddress);
     } catch (err: any) {
       setError(err.message || "User rejected connection or network mismatch.");
     }

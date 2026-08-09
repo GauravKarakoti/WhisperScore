@@ -71,7 +71,7 @@ async function waitForProofServer(maxAttempts = 60, delayMs = 2000): Promise<boo
 // ─── Compiled contract loading ─────────────────────────────────────────────────
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const zkConfigPath = path.resolve(__dirname, '..', 'contracts', 'managed', 'counter');
+const zkConfigPath = path.resolve(__dirname, '..', 'contracts', 'managed', 'whisper_score');
 const contractPath = path.join(zkConfigPath, 'contract', 'index.js');
 
 if (!fs.existsSync(contractPath)) {
@@ -79,9 +79,9 @@ if (!fs.existsSync(contractPath)) {
   process.exit(1);
 }
 
-const Counter = await import(pathToFileURL(contractPath).href);
+const WhisperScore = await import(pathToFileURL(contractPath).href);
 
-const compiledContract = CompiledContract.make('counter', Counter.Contract as any).pipe(
+const compiledContract = CompiledContract.make('whisper_score', WhisperScore.Contract as any).pipe(
   (CompiledContract.withWitnesses as any)({
     privateUserValue: () => 750n,
   }),

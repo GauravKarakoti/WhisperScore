@@ -71,7 +71,7 @@ export const NETWORK_CONFIGS: Record<NetworkId, NetworkConfig> = {
     networkId: 'preprod',
     indexer:   'https://indexer.preprod.midnight.network/api/v4/graphql',
     indexerWS: 'wss://indexer.preprod.midnight.network/api/v4/graphql/ws',
-    node:      'https://rpc.preprod.midnight.network',
+    node:      'wss://rpc.preprod.midnight.network/',
     proofServer: 'http://127.0.0.1:6300',
     faucet: 'https://midnight-tmnight-preprod.nethermind.dev',
     composeServices: ['proof-server'],

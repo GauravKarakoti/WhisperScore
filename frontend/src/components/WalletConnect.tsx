@@ -1,35 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useMidnight } from '../hooks/useMidnight.tsx'; // Pull from the shared context
 
 export const WalletConnect: React.FC = () => {
-  const [address, setAddress] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const connectWallet = async () => {
-    try {
-      setError(null);
-      // @ts-ignore - window.midnight is injected by Lace
-      const laceConnector = window.midnight?.mnLace;
-      
-      if (!laceConnector) {
-        throw new Error("Lace wallet is not installed or Midnight network is unsupported.");
-      }
-
-      // In v4, enable() is replaced by connect(networkId)
-      const api = await laceConnector.connect('preprod');
-      
-      // Destructure the string from the returned object
-      const { unshieldedAddress } = await api.getUnshieldedAddress();
-      
-      // Now you are passing a bare string to state
-      setAddress(unshieldedAddress);
-    } catch (err: any) {
-      setError(err.message || "User rejected connection or network mismatch.");
-    }
-  };
-
-  const disconnectWallet = () => {
-    setAddress(null);
-  };
+  // Grab the shared state and functions from the context provider
+  const { address, error, connectWallet, disconnectWallet } = useMidnight();
 
   return (
     <div className="wallet-container" style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>

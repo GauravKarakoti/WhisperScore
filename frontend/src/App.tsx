@@ -3,7 +3,7 @@ import { CircuitCall } from './components/CircuitCall';
 import './App.css';
 
 function App() {
-  const PREPROD_CONTRACT_ADDRESS = "PASTE_YOUR_CONTRACT_ADDRESS_HERE";
+  const PREPROD_CONTRACT_ADDRESS = "3b7b435c92ec21b29b0810c2715e724bba2f752cc33c1561c5ed05b11ba418c8";
 
   return (
     <>

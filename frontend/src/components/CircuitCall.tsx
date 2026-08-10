@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
-// 1. IMPORT YOUR COMPILED CONTRACT AS A FULL MODULE
-// findDeployedContract expects the full module, not just the Contract class
 import * as whisperScoreContract from '../../../contracts/managed/whisper_score/contract'; 
-
-// 2. IMPORT MIDNIGHT JS HELPERS
-// Updated to use findDeployedContract
 import { findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
+import { useMidnight } from '../hooks/useMidnight.tsx';
 
-// 3. IMPORT YOUR PROVIDERS HOOK
-import { useMidnight } from '../hooks/useMidnight';
+import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
+import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
 
 export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAddress }) => {
   const [isProving, setIsProving] = useState(false);
   const [txResult, setTxResult] = useState<string | null>(null);
 
   const { providers } = useMidnight();
-
+  
   const executeCircuit = async () => {
     if (!providers) {
       console.error("Midnight providers are not initialized.");
@@ -27,31 +23,57 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
     setTxResult(null);
 
     try {
-      const userPrivateScore = 800n; // Using BigInt for Uint<32>
+      const userPrivateScore = 800n; // Your private witness value
 
-      // 4. MAP WITNESSES TO COMPILER EXPECTATIONS
-      // Midnight 0.16.x expects witnesses to be directly on the provider object
+      // 1. Fetch Lace network config and shielded keys
+      const config = await providers.getConfiguration();
+      const shieldedState = await providers.getShieldedAddresses();
+
+      // 2. Initialize the heavy lifters
+      const publicDataProvider = indexerPublicDataProvider(config.indexerUri, config.indexerWsUri);
+      const zkConfigProvider = new FetchZkConfigProvider(window.location.origin);
+      const proofProvider = await providers.getProvingProvider(zkConfigProvider);
+
+      // 3. Assemble the provider stack and map Lace's transaction methods
       const contractProviders = {
-        ...providers,
+        publicDataProvider,
+        zkConfigProvider,
+        proofProvider,
+        walletProvider: {
+          coinPublicKey: shieldedState.shieldedCoinPublicKey,
+          encryptionPublicKey: shieldedState.shieldedEncryptionPublicKey,
+          balanceTx: async (tx: any) => {
+            const balanced = await providers.balanceUnsealedTransaction(tx);
+            return balanced.tx;
+          }
+        },
+        midnightProvider: {
+          submitTx: async (tx: any) => {
+            await providers.submitTransaction(tx);
+          }
+        },
+        privateStateProvider: {
+          setContractAddress: (addr: string) => {},
+          get: async (id: string) => null,
+          set: async (id: string, state: any) => {},
+          remove: async (id: string) => {}
+        },
         privateUserValue: (witnessContext: any) => [
-          witnessContext.currentPrivateState, 
+          witnessContext.currentPrivateState ?? {}, 
           userPrivateScore
         ],
-      } as any; // Cast as 'any' to satisfy strict ContractProviders type if using a minimal provider stack
+      } as any; 
 
-      // 5. CONNECT TO THE PREPROD CONTRACT
-      // Provide the contractAddress and the compiled module
+      // 4. Connect to the smart contract
       const whisperScore = await findDeployedContract(contractProviders, {
         contractAddress: contractAddress as any,
         compiledContract: whisperScoreContract as any,
       });
 
-      // 6. EXECUTE THE CIRCUIT
-      // Circuits are now nested under the callTx object
+      // 5. Execute the zero-knowledge proof locally
       const tx = await whisperScore.callTx.checkEligibility();
 
-      // 7. HANDLE THE ON-CHAIN RESULT
-      // The transaction hash is public, but the returned boolean result is strictly private
+      // 6. Output the successful result
       setTxResult(`Tx Hash: ${tx.public.txHash}\nEligibility Verified: ${tx.private.result}`);
       
     } catch (error: any) {
@@ -63,7 +85,7 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
   };
 
   return (
-    <div style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px', marginTop: '1rem' }}>
+    <div style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
       <h3>Execute Midnight Circuit</h3>
       <p style={{ fontStyle: 'italic', color: '#555' }}>
         Proved without revealing your input

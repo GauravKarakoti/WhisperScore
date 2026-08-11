@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
-import * as whisperScoreContract from '../../../contracts/managed/whisper_score/contract'; 
+import * as whisperScoreContract from '../../../contracts/managed/whisper_score/contract/index.js'; 
 import { findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { useMidnight } from '../hooks/useMidnight.tsx';
 
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
+
+// 1. Import the CompiledContract wrapper helper
+import { CompiledContract } from '@midnight-ntwrk/midnight-js-protocol/compact-js';
 
 export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAddress }) => {
   const [isProving, setIsProving] = useState(false);
@@ -23,18 +26,17 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
     setTxResult(null);
 
     try {
-      const userPrivateScore = 800n; // Your private witness value
+      const userPrivateScore = 800n; 
 
-      // 1. Fetch Lace network config and shielded keys
       const config = await providers.getConfiguration();
       const shieldedState = await providers.getShieldedAddresses();
 
-      // 2. Initialize the heavy lifters
       const publicDataProvider = indexerPublicDataProvider(config.indexerUri, config.indexerWsUri);
       const zkConfigProvider = new FetchZkConfigProvider(window.location.origin);
       const proofProvider = await providers.getProvingProvider(zkConfigProvider);
 
-      // 3. Assemble the provider stack and map Lace's transaction methods
+      const inMemoryPrivateState: Record<string, any> = {};
+
       const contractProviders = {
         publicDataProvider,
         zkConfigProvider,
@@ -54,26 +56,34 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
         },
         privateStateProvider: {
           setContractAddress: (addr: string) => {},
-          get: async (id: string) => null,
-          set: async (id: string, state: any) => {},
-          remove: async (id: string) => {}
+          get: async (id: string) => inMemoryPrivateState[id] ?? undefined, 
+          set: async (id: string, state: any) => { inMemoryPrivateState[id] = state; },
+          remove: async (id: string) => { delete inMemoryPrivateState[id]; }
         },
         privateUserValue: (witnessContext: any) => [
-          witnessContext.currentPrivateState ?? {}, 
+          witnessContext.currentPrivateState ?? undefined, 
           userPrivateScore
         ],
       } as any; 
 
-      // 4. Connect to the smart contract
+      // 2. Wrap the raw contract class into a CompiledContract object
+      // This injects the missing 'ctor' property!
+      const compiledWhisperScore = CompiledContract.make(
+        'whisper_score',
+        whisperScoreContract.Contract
+      );
+
+      console.log("Contract Providers:", contractProviders);
+      console.log("Contract Address:", contractAddress);
+      console.log("Compiled WhisperScore Contract:", compiledWhisperScore);
+
       const whisperScore = await findDeployedContract(contractProviders, {
         contractAddress: contractAddress as any,
-        compiledContract: whisperScoreContract as any,
+        compiledContract: compiledWhisperScore as any,
       });
 
-      // 5. Execute the zero-knowledge proof locally
       const tx = await whisperScore.callTx.checkEligibility();
 
-      // 6. Output the successful result
       setTxResult(`Tx Hash: ${tx.public.txHash}\nEligibility Verified: ${tx.private.result}`);
       
     } catch (error: any) {

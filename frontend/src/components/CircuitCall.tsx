@@ -6,9 +6,6 @@ import { useMidnight } from '../hooks/useMidnight.tsx';
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
 
-// 1. Import the CompiledContract wrapper helper
-import { CompiledContract } from '@midnight-ntwrk/midnight-js-protocol/compact-js';
-
 export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAddress }) => {
   const [isProving, setIsProving] = useState(false);
   const [txResult, setTxResult] = useState<string | null>(null);
@@ -37,6 +34,7 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
 
       const inMemoryPrivateState: Record<string, any> = {};
 
+      // 1. PROVIDERS + WITNESSES
       const contractProviders = {
         publicDataProvider,
         zkConfigProvider,
@@ -60,26 +58,25 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
           set: async (id: string, state: any) => { inMemoryPrivateState[id] = state; },
           remove: async (id: string) => { delete inMemoryPrivateState[id]; }
         },
+        // Witnesses belong right here in the providers!
         privateUserValue: (witnessContext: any) => [
           witnessContext.currentPrivateState ?? undefined, 
           userPrivateScore
         ],
       } as any; 
 
-      // 2. Wrap the raw contract class into a CompiledContract object
-      // This injects the missing 'ctor' property!
-      const compiledWhisperScore = CompiledContract.make(
-        'whisper_score',
-        whisperScoreContract.Contract
-      );
+      // 2. MAP THE COMPILED CONTRACT CORRECTLY
+      // We manually map your module's exports to the exact shape the SDK demands
+      const compiledContract = {
+        contract: whisperScoreContract.Contract, // Maps uppercase 'C' to lowercase 'c'
+        ledger: whisperScoreContract.ledger,
+        pureCircuits: whisperScoreContract.pureCircuits
+      };
 
-      console.log("Contract Providers:", contractProviders);
-      console.log("Contract Address:", contractAddress);
-      console.log("Compiled WhisperScore Contract:", compiledWhisperScore);
-
+      // 3. FIND AND EXECUTE
       const whisperScore = await findDeployedContract(contractProviders, {
-        contractAddress: contractAddress as any,
-        compiledContract: compiledWhisperScore as any,
+        contractAddress: contractAddress,
+        compiledContract: compiledContract as any,
       });
 
       const tx = await whisperScore.callTx.checkEligibility();

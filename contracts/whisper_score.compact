@@ -1,26 +1,26 @@
-  pragma compiler_version >= 0.14.0;
+pragma compiler_version >= 0.14.0;
 
-  // PUBLIC STATE: The minimum required threshold (e.g., 700 credit score, or 10 gym visits).
-  // PRIVATE WITNESS: The user's actual value, which never leaves their machine.
-  // PROOF: The circuit checks if privateValue >= threshold and discloses ONLY a boolean.
+// PUBLIC STATE: The minimum required threshold (e.g., 700 credit score, or 10 gym visits).
+// PRIVATE WITNESS: The user's actual value, which never leaves their machine.
+// PROOF: The circuit checks if privateValue >= threshold and discloses ONLY a boolean.
 
-  export ledger requiredThreshold: Uint<32>;
+export ledger requiredThreshold: Uint<32>;
 
-  constructor(initialThreshold: Uint<32>) {
-    // We must explicitly disclose the input to save it to public ledger state
-    requiredThreshold = disclose(initialThreshold);
-  }
+constructor(initialThreshold: Uint<32>) {
+  // We must explicitly disclose the input to save it to public ledger state
+  requiredThreshold = disclose(initialThreshold);
+}
 
-  // The user's private data is passed in as a witness
-  witness privateUserValue(): Uint<32>;
+// The user's private data is passed in as a witness
+witness privateUserValue(): Uint<32>;
 
-  export circuit checkEligibility(): Boolean {
-    const threshold = requiredThreshold;
-    const userValue = privateUserValue();
-    
-    // Compute the comparison privately
-    const isEligible = userValue >= threshold;
-    
-    // Deliberately disclose ONLY the boolean result to the public ledger
-    return disclose(isEligible);
-  }
+export circuit checkEligibility(): Boolean {
+  const threshold = requiredThreshold;
+  const userValue = privateUserValue();
+  
+  // Compute the comparison privately
+  const isEligible = userValue >= threshold;
+  
+  // Deliberately disclose ONLY the boolean result to the public ledger
+  return disclose(isEligible);
+}

@@ -21,6 +21,11 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Install Midnight Compact Compiler
+        run: |
+          npm install -g @midnight-ntwrk/compactc
+          sudo ln -s $(which compactc) /usr/local/bin/compact || true
+
       - name: Compile Compact Contract
         run: npm run compile
 

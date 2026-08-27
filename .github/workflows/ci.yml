@@ -21,12 +21,18 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Install Midnight Compact Compiler
+      - name: Install Midnight Compact CLI
         run: |
-          npm install -g @midnight-ntwrk/compactc
-          sudo ln -s $(which compactc) /usr/local/bin/compact || true
+          curl --proto '=https' --tlsv1.2 -LsSf https://github.com/midnightntwrk/compact/releases/latest/download/compact-installer.sh | sh
+
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Update Compact Toolchain
+        # This command downloads the actual compiler binaries
+        run: compact update
 
       - name: Compile Compact Contract
+        # This will now successfully find 'compact compile'
         run: npm run compile
 
       - name: Run Tests

@@ -3,13 +3,14 @@ import { CircuitCall } from './components/CircuitCall';
 import './App.css';
 
 function App() {
-  const PREPROD_CONTRACT_ADDRESS = "3b7b435c92ec21b29b0810c2715e724bba2f752cc33c1561c5ed05b11ba418c8";
+  // Utilizing the Preprod address
+  const PREPROD_CONTRACT_ADDRESS = "41f548ae05b97a25646c374de0094b02f0a9f26bb17de8317eafebdb66c0f0e3";
 
   return (
     <>
       <header className="header">
-        <h1>Midnight dApp</h1>
-        <p>Level 2: Midnight Builder Challenge</p>
+        <h1>WhisperScore</h1>
+        <p>Programmable Selective Disclosure on Midnight</p>
       </header>
 
       <section id="center">
@@ -25,7 +26,7 @@ function App() {
       <div className="ticks"></div>
 
       <footer id="spacer">
-        <p>Proved locally, verified on Midnight Preprod.</p>
+        <p>Proved locally. Verified on-chain. Your data never leaves your device.</p>
       </footer>
     </>
   );

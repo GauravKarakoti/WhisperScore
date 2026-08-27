@@ -1,24 +1,48 @@
 import React from 'react';
-import { useMidnight } from '../hooks/useMidnight.tsx'; // Pull from the shared context
+import { useMidnight } from '../hooks/useMidnight.tsx';
 
 export const WalletConnect: React.FC = () => {
-  // Grab the shared state and functions from the context provider
   const { address, error, connectWallet, disconnectWallet } = useMidnight();
 
   return (
-    <div className="wallet-container" style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h3>Lace Wallet</h3>
+    <div style={{ padding: '2rem' }}>
+      <h3 style={{ marginBottom: '0.5rem' }}>Lace Wallet</h3>
+      <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
+        Connect your Lace wallet (Preprod network) to interact with the circuit.
+      </p>
       
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && (
+        <div style={{ marginBottom: '1rem', padding: '0.5rem', color: '#ff4d4f', background: 'rgba(255, 77, 79, 0.1)', borderRadius: '4px', fontSize: '0.9rem' }}>
+          {error}
+        </div>
+      )}
       
       {!address ? (
-        <button onClick={connectWallet} style={{ cursor: 'pointer', padding: '0.5rem 1rem' }}>
+        <button onClick={connectWallet}>
           Connect Wallet
         </button>
       ) : (
-        <div>
-          <p><strong>Connected Address:</strong> {address.slice(0, 10)}...{address.slice(-8)}</p>
-          <button onClick={disconnectWallet} style={{ cursor: 'pointer', padding: '0.5rem 1rem', background: '#ff4d4f', color: 'white', border: 'none' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ 
+            padding: '12px', 
+            background: 'var(--code-bg)', 
+            borderRadius: '6px', 
+            border: '1px solid var(--border)',
+            fontFamily: 'var(--mono)',
+            fontSize: '16px',
+            color: 'var(--text-h)',
+            textAlign: 'center'
+          }}>
+            {address.slice(0, 12)}...{address.slice(-10)}
+          </div>
+          <button 
+            onClick={disconnectWallet} 
+            style={{ 
+              background: 'transparent', 
+              color: '#ff4d4f', 
+              border: '1px solid #ff4d4f' 
+            }}
+          >
             Disconnect
           </button>
         </div>

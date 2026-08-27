@@ -8,7 +8,7 @@
 | Network  | Address                                                            |
 |----------|--------------------------------------------------------------------|
 | Preview  | `16be13f4d0aa666121fc6be71836e99d88cdbb1ce25e2438c559304d7a9cf10f` |
-| Preprod  | `3b7b435c92ec21b29b0810c2715e724bba2f752cc33c1561c5ed05b11ba418c8` |
+| Preprod  | `41f548ae05b97a25646c374de0094b02f0a9f26bb17de8317eafebdb66c0f0e3` |
 
 ## What This Does
 WhisperScore replaces full data disclosure with programmable selective disclosure. A user can prove “my FICO score > 700” or “I have completed ≥ 10 gym sessions this month” without giving away the precise number. A verifier receives only a cryptographic “yes/no” proof that the user’s private value meets the required cutoff.

@@ -32,7 +32,6 @@
 
 .card-container {
   width: 100%;
-  max-width: 500px;
   background: var(--code-bg);
   border: 1px solid var(--border);
   border-radius: 12px;

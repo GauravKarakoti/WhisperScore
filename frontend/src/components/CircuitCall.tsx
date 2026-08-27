@@ -9,6 +9,7 @@ import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-conf
 export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAddress }) => {
   const [isProving, setIsProving] = useState(false);
   const [txResult, setTxResult] = useState<string | null>(null);
+  const [scoreInput, setScoreInput] = useState<string>(''); // Captures user's private value
 
   const { providers } = useMidnight();
   
@@ -19,11 +20,17 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
       return;
     }
 
+    if (!scoreInput || isNaN(Number(scoreInput))) {
+      setTxResult("Error: Please enter a valid numeric score.");
+      return;
+    }
+
     setIsProving(true);
     setTxResult(null);
 
     try {
-      const userPrivateScore = 800n; 
+      // Cast the string input to the bigint required by the Compact witness
+      const userPrivateScore = BigInt(scoreInput); 
 
       const config = await providers.getConfiguration();
       const shieldedState = await providers.getShieldedAddresses();
@@ -34,7 +41,6 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
 
       const inMemoryPrivateState: Record<string, any> = {};
 
-      // 1. PROVIDERS + WITNESSES
       const contractProviders = {
         publicDataProvider,
         zkConfigProvider,
@@ -58,22 +64,18 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
           set: async (id: string, state: any) => { inMemoryPrivateState[id] = state; },
           remove: async (id: string) => { delete inMemoryPrivateState[id]; }
         },
-        // Witnesses belong right here in the providers!
         privateUserValue: (witnessContext: any) => [
           witnessContext.currentPrivateState ?? undefined, 
-          userPrivateScore
+          userPrivateScore // Injected locally into the ZK proof generation
         ],
       } as any; 
 
-      // 2. MAP THE COMPILED CONTRACT CORRECTLY
-      // We manually map your module's exports to the exact shape the SDK demands
       const compiledContract = {
-        contract: whisperScoreContract.Contract, // Maps uppercase 'C' to lowercase 'c'
+        contract: whisperScoreContract.Contract,
         ledger: whisperScoreContract.ledger,
         pureCircuits: whisperScoreContract.pureCircuits
       };
 
-      // 3. FIND AND EXECUTE
       const whisperScore = await findDeployedContract(contractProviders, {
         contractAddress: contractAddress,
         compiledContract: compiledContract as any,
@@ -92,24 +94,53 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
   };
 
   return (
-    <div style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '8px' }}>
-      <h3>Execute Midnight Circuit</h3>
-      <p style={{ fontStyle: 'italic', color: '#555' }}>
-        Proved without revealing your input
+    <div style={{ padding: '2rem' }}>
+      <h3 style={{ marginBottom: '0.5rem' }}>Verify Eligibility</h3>
+      <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
+        Enter your score. It remains encrypted on your device and is never broadcast to the ledger.
       </p>
       
-      <button 
-        onClick={executeCircuit} 
-        disabled={isProving || !providers}
-        style={{ cursor: isProving || !providers ? 'not-allowed' : 'pointer', padding: '0.5rem 1rem' }}
-      >
-        {isProving ? "Generating ZK Proof Locally..." : "Call Circuit"}
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <input 
+          type="number" 
+          placeholder="Enter private value (e.g. 750)" 
+          value={scoreInput}
+          onChange={(e) => setScoreInput(e.target.value)}
+          style={{
+            padding: '12px',
+            borderRadius: '6px',
+            border: '1px solid var(--border)',
+            background: 'var(--bg)',
+            color: 'var(--text-h)',
+            fontFamily: 'var(--mono)',
+            fontSize: '16px',
+            width: '100%',
+            boxSizing: 'border-box'
+          }}
+        />
+        
+        <button 
+          onClick={executeCircuit} 
+          disabled={isProving || !providers || !scoreInput}
+        >
+          {isProving ? "Generating ZK Proof Locally..." : "Generate Proof & Submit"}
+        </button>
+      </div>
 
       {txResult && (
-        <div style={{ marginTop: '1rem', padding: '0.5rem', background: '#e6ffe6', border: '1px solid #b3ffb3', whiteSpace: 'pre-line' }}>
-          <strong>Transaction Submitted!</strong>
-          <p style={{ fontFamily: 'monospace', wordBreak: 'break-all', marginTop: '0.5rem' }}>
+        <div style={{ 
+          marginTop: '1.5rem', 
+          padding: '1rem', 
+          background: txResult.startsWith('Error') ? 'rgba(255, 77, 79, 0.1)' : 'var(--code-bg)', 
+          border: `1px solid ${txResult.startsWith('Error') ? '#ff4d4f' : 'var(--border)'}`, 
+          borderRadius: '6px',
+          whiteSpace: 'pre-line',
+          textAlign: 'left'
+        }}>
+          <strong style={{ color: txResult.startsWith('Error') ? '#ff4d4f' : 'var(--text-h)' }}>
+            {txResult.startsWith('Error') ? 'Execution Failed' : 'Transaction Successful!'}
+          </strong>
+          <p style={{ fontFamily: 'var(--mono)', wordBreak: 'break-all', marginTop: '0.5rem', fontSize: '0.9rem' }}>
             {txResult}
           </p>
         </div>

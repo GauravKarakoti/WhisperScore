@@ -1,15 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import wasm from 'vite-plugin-wasm';
-import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineConfig({
   plugins: [
     react(),
     // @ts-ignore: Vite Wasm plugin type mismatch workaround
-    wasm(),
-    // @ts-ignore: Vite top-level await plugin type mismatch workaround
-    topLevelAwait()
+    wasm()
   ],
   resolve: {
     // Force a single physical copy of the Midnight packages in the bundle.
@@ -27,7 +24,10 @@ export default defineConfig({
     ],
   },
   optimizeDeps: {
-    exclude: ['@midnight-ntwrk/midnight-ledger-wasm']
+    exclude: ['@midnight-ntwrk/midnight-ledger-wasm'],
+    esbuildOptions: {
+      target: 'esnext'
+    }
   },
   build: {
     target: 'esnext'

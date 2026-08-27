@@ -1,4 +1,5 @@
 # WhisperScore
+[![Midnight dApp CI](https://github.com/GauravKarakoti/WhisperScore/actions/workflows/ci.yml/badge.svg)](https://github.com/GauravKarakoti/WhisperScore/actions/workflows/ci.yml)
 > A decentralized application utilizing Midnight network to provide which lets users prove they meet a threshold to access a service without ever revealing the actual number.
 
 ## [Live Demo](https://whisper-score-steel.vercel.app/)
@@ -37,6 +38,11 @@ On-chain observers can see that a transaction was executed and verified against 
 
 ## Run Tests
 Run `npm test` to execute the test suite covering circuit logic and privacy constraints.
+
+## CI/CD
+This project uses GitHub Actions to run a CI/CD pipeline. On every push to the `main` branch, the pipeline checks out the code, installs dependencies, compiles the Compact smart contract, and runs the test suite to ensure no breaking changes are introduced.
+
+## [Product Proposal](./Proposal.md)
 
 ## Initial Idea
 WhisperScore lets users prove they meet a threshold (credit score, income level, health metric, membership tier) to access a service, discount, or loan—without ever revealing the actual number or underlying documents. A verifier (e.g., a lender, gym, insurer) receives only a cryptographic “yes/no” proof that the user’s private value is above (or below) a required cutoff. The user’s data stays encrypted on Midnight’s shielded ledger; the business sees only the proof they need for compliance or business logic.

@@ -5,25 +5,23 @@ export type Witnesses<PS> = {
 }
 
 export type ImpureCircuits<PS> = {
-  checkEligibility(context: __compactRuntime.CircuitContext<PS>,
-                   userAddress_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
+  checkEligibility(context: __compactRuntime.CircuitContext<PS>): __compactRuntime.CircuitResults<PS, boolean>;
 }
 
 export type ProvableCircuits<PS> = {
-  checkEligibility(context: __compactRuntime.CircuitContext<PS>,
-                   userAddress_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
+  checkEligibility(context: __compactRuntime.CircuitContext<PS>): __compactRuntime.CircuitResults<PS, boolean>;
 }
 
 export type PureCircuits = {
 }
 
 export type Circuits<PS> = {
-  checkEligibility(context: __compactRuntime.CircuitContext<PS>,
-                   userAddress_0: Uint8Array): __compactRuntime.CircuitResults<PS, boolean>;
+  checkEligibility(context: __compactRuntime.CircuitContext<PS>): __compactRuntime.CircuitResults<PS, boolean>;
 }
 
 export type Ledger = {
   readonly requiredThreshold: bigint;
+  readonly eligibleCount: bigint;
 }
 
 export type ContractReferenceLocations = any;

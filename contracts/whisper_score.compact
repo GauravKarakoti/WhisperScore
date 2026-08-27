@@ -2,26 +2,30 @@ pragma compiler_version >= 0.14.0;
 
 // PUBLIC STATE
 export ledger requiredThreshold: Uint<32>;
-// Add a mapping to store if a user is eligible, fulfilling the "State Transition" requirement
-export ledger eligibilityRecord: Map<Bytes<32>, Boolean>;
+// STATE TRANSITION TARGET: Keep a running tally of successful eligible users
+export ledger eligibleCount: Uint<32>;
 
 constructor(initialThreshold: Uint<32>) {
   requiredThreshold = disclose(initialThreshold);
+  eligibleCount = 0;
 }
 
 // PRIVATE WITNESS
 witness privateUserValue(): Uint<32>;
 
-export circuit checkEligibility(userAddress: Bytes<32>): Boolean {
+export circuit checkEligibility(): Boolean {
   const threshold = requiredThreshold;
   const userValue = privateUserValue();
   
   // Compute the comparison privately
   const isEligible = userValue >= threshold;
   
-  // STATE TRANSITION: Record the outcome on-chain without exposing the underlying score
-  eligibilityRecord.insert(userAddress, isEligible);
+  // STATE TRANSITION: Convert the boolean into a numeric increment
+  const increment = (isEligible as Field) as Uint<32>;
   
-  // Deliberately disclose the boolean result (Eligible/Not Eligible)
+  // Explicitly disclose the arithmetic result to commit it to the public ledger
+  eligibleCount = disclose((eligibleCount + increment) as Uint<32>);
+  
+  // Disclose and return the boolean result
   return disclose(isEligible);
 }

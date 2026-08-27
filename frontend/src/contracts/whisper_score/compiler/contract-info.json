@@ -8,13 +8,6 @@
       "pure": false,
       "proof": true,
       "arguments": [
-        {
-          "name": "userAddress",
-          "type": {
-            "type-name": "Bytes",
-            "length": 32
-          }
-        }
       ],
       "result-type": {
         "type-name": "Boolean"
@@ -38,6 +31,16 @@
     {
       "name": "requiredThreshold",
       "index": 0,
+      "exported": true,
+      "storage": "Cell",
+      "type": {
+        "type-name": "Uint",
+        "maxval": 4294967295
+      }
+    },
+    {
+      "name": "eligibleCount",
+      "index": 1,
       "exported": true,
       "storage": "Cell",
       "type": {

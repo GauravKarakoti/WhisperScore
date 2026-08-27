@@ -1,70 +1,61 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
 
 describe('WhisperScore Eligibility Contract (whisper_score.compact)', () => {
-  // Simulated Ledger State
+  // Simulated Ledger State matching the counter approach
   let ledger: {
     requiredThreshold: number;
-    eligibilityRecord: Record<string, boolean>;
+    eligibleCount: number;
   };
 
-  // Simulated Circuit Call
-  const checkEligibilityCircuit = (userAddress: string, privateUserValue: number) => {
-    // Read from state
+  // Simulated Circuit Call (matching the updated contract behavior)
+  const checkEligibilityCircuit = (privateUserValue: number) => {
     const threshold = ledger.requiredThreshold;
     
-    // Privacy Constraint: Comparison happens locally, input is not exposed
+    // Privacy Constraint: Comparison happens locally
     const isEligible = privateUserValue >= threshold;
     
-    // State Transition: Update the ledger
-    ledger.eligibilityRecord[userAddress] = isEligible;
+    // State Transition: Increment tally on the ledger if eligible using numeric increment
+    const increment = isEligible ? 1 : 0;
+    ledger.eligibleCount += increment;
     
     // Disclose output
     return isEligible;
   };
 
   beforeEach(() => {
-    // Simulate Contract Deployment (Constructor)
+    // Simulate Contract Deployment
     ledger = {
       requiredThreshold: 700,
-      eligibilityRecord: {}
+      eligibleCount: 0
     };
   });
 
   test('Circuit Logic: Returns true when private value exceeds threshold', () => {
-    const userAddress = "0xUser123";
     const privateValue = 750; // Private Witness
     
-    const result = checkEligibilityCircuit(userAddress, privateValue);
+    const result = checkEligibilityCircuit(privateValue);
     
     expect(result).toBe(true);
   });
 
-  test('State Transitions: Updates the eligibility record on the ledger', () => {
-    const userAddress = "0xUser456";
-    const privateValue = 650; // Private Witness
+  test('State Transitions: Increments the eligible count on the ledger', () => {
+    const privateValue = 750; // Private Witness
     
-    // Run circuit
-    const result = checkEligibilityCircuit(userAddress, privateValue);
+    expect(ledger.eligibleCount).toBe(0);
     
-    // Verify the return value
-    expect(result).toBe(false);
+    const result = checkEligibilityCircuit(privateValue);
     
-    // Verify the ledger state actually transitioned!
-    expect(ledger.eligibilityRecord[userAddress]).toBe(false);
+    expect(result).toBe(true);
+    expect(ledger.eligibleCount).toBe(1);
   });
 
   test('Privacy: Private inputs are never exposed in the disclosed output or state', () => {
-    const userAddress = "0xUser789";
     const privateValue = 800; // Private Witness
     
-    const result = checkEligibilityCircuit(userAddress, privateValue);
+    const result = checkEligibilityCircuit(privateValue);
     
-    // The output should strictly be a boolean, not the private value
     expect(typeof result).toBe('boolean');
     expect(result).not.toBe(privateValue);
-    
-    // The public ledger state should NOT contain the private value
-    const ledgerValues = Object.values(ledger.eligibilityRecord);
-    expect(ledgerValues).not.toContain(privateValue);
+    expect(ledger.eligibleCount).not.toBe(privateValue);
   });
 });

@@ -30,6 +30,7 @@
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.4",
     "@vitejs/plugin-react": "^6.0.5",
+    "esbuild": "^0.28.2",
     "oxlint": "^1.75.0",
     "rollup": "^4.62.4",
     "typescript": "~6.0.2",

@@ -1,8 +1,7 @@
 # WhisperScore
 > A decentralized application utilizing Midnight network to provide which lets users prove they meet a threshold to access a service without ever revealing the actual number.
 
-## Live Demo
-[PASTE LIVE URL AFTER DEPLOYING FRONTEND]
+## [Live Demo](https://whisper-score-steel.vercel.app/)
 
 ## Contract Address
 | Network  | Address                                                            |

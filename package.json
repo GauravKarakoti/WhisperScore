@@ -6,7 +6,7 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "compile": "for file in contracts/*.compact; do name=$(basename \"$file\" .compact); compact compile \"$file\" \"contracts/managed/$name\"; done",
+    "compile": "for file in contracts/*.compact; do name=$(basename \"$file\" .compact); compact compile \"$file\" \"contracts/managed/$name\"; done && cp -r contracts/managed frontend/src/contracts",
     "build": "npx tsc --noEmit || true",
     "setup": "npx tsx src/setup.ts",
     "deploy": "npx tsx src/deploy.ts",

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as whisperScoreContract from '../../../contracts/managed/whisper_score/contract/index.js'; 
+import * as whisperScoreContract from '../contracts/whisper_score/contract/index.js';
 import { findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { useMidnight } from '../hooks/useMidnight.tsx';
 
@@ -59,7 +59,7 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
           }
         },
         privateStateProvider: {
-          setContractAddress: (addr: string) => {},
+          setContractAddress: (_addr: string) => {},
           get: async (id: string) => inMemoryPrivateState[id] ?? undefined, 
           set: async (id: string, state: any) => { inMemoryPrivateState[id] = state; },
           remove: async (id: string) => { delete inMemoryPrivateState[id]; }

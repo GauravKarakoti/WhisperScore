@@ -69,9 +69,10 @@ export const NETWORK_CONFIGS: Record<NetworkId, NetworkConfig> = {
   },
   preprod: {
     networkId: 'preprod',
-    indexer:   `https://midnight-preprod.blockfrost.io/api/v0?project_id=${process.env.PROJECT_ID}`,
-    indexerWS: `wss://midnight-preprod.blockfrost.io/api/v0/ws?project_id=${process.env.PROJECT_ID}`,
-    node:      `https://rpc.midnight-preprod.blockfrost.io?project_id=${process.env.PROJECT_ID}`,
+    // We leave these open-ended and append the project ID securely in applyEnvOverrides
+    indexer:   'https://midnight-preprod.blockfrost.io/api/v0?project_id=',
+    indexerWS: 'wss://midnight-preprod.blockfrost.io/api/v0/ws?project_id=',
+    node:      'https://rpc.midnight-preprod.blockfrost.io?project_id=',
     proofServer: 'http://127.0.0.1:6300',
     faucet: 'https://midnight-tmnight-preprod.nethermind.dev',
     composeServices: ['proof-server'],
@@ -172,6 +173,15 @@ const ENV_OVERRIDES: Array<[keyof NetworkConfig, string]> = [
 
 function applyEnvOverrides(base: NetworkConfig, env: NodeJS.ProcessEnv): NetworkConfig {
   const out: NetworkConfig = { ...base, composeServices: [...base.composeServices] };
+  
+  // Lazily inject Blockfrost PROJECT_ID only when the Preprod network config is requested
+  if (out.networkId === 'preprod') {
+    const projectId = env.PROJECT_ID || '';
+    out.indexer += projectId;
+    out.indexerWS += projectId;
+    out.node += projectId;
+  }
+
   for (const [field, varName] of ENV_OVERRIDES) {
     const v = env[varName];
     if (v) (out as unknown as Record<string, unknown>)[field] = v;

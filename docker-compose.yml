@@ -22,7 +22,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -sf -H 'Content-Type: application/json' -d '{\"id\":1,\"jsonrpc\":\"2.0\",\"method\":\"chain_getBlockHash\",\"params\":[1]}' http://localhost:9944 | grep -q '\"result\":\"0x'",
+          "curl -sf -H 'Content-Type: application/json' -d '{\"id\":1,\"jsonrpc\":\"2.0\",\"method\":\"chain_getBlockHash\",\"params\":[1]}' http://localhost:9944 | grep -q '\"result\":\"0x'"
         ]
       interval: 2s
       timeout: 5s

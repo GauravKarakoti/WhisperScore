@@ -9,7 +9,7 @@ import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-conf
 export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAddress }) => {
   const [isProving, setIsProving] = useState(false);
   const [txResult, setTxResult] = useState<string | null>(null);
-  const [scoreInput, setScoreInput] = useState<string>(''); // Captures user's private value
+  const [scoreInput, setScoreInput] = useState<string>(''); 
 
   const { providers } = useMidnight();
   
@@ -29,7 +29,6 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
     setTxResult(null);
 
     try {
-      // Cast the string input to the bigint required by the Compact witness
       const userPrivateScore = BigInt(scoreInput); 
 
       const config = await providers.getConfiguration();
@@ -95,35 +94,77 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
 
   return (
     <div style={{ padding: '2rem' }}>
-      <h3 style={{ marginBottom: '0.5rem' }}>Verify Eligibility</h3>
-      <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
-        Enter your score. It remains encrypted on your device and is never broadcast to the ledger.
+      <style>
+        {`
+          @keyframes spin {
+            100% { transform: rotate(360deg); }
+          }
+          .spinner {
+            animation: spin 2s linear infinite;
+          }
+        `}
+      </style>
+      
+      <h3 style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <span>🔒</span> Verify Eligibility
+      </h3>
+      <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.95rem', lineHeight: '1.5' }}>
+        Enter your score. It remains strictly <strong>encrypted on your device</strong> and is never broadcast to the public ledger.
       </p>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <input 
-          type="number" 
-          placeholder="Enter private value (e.g. 750)" 
-          value={scoreInput}
-          onChange={(e) => setScoreInput(e.target.value)}
-          style={{
-            padding: '12px',
-            borderRadius: '6px',
-            border: '1px solid var(--border)',
-            background: 'var(--bg)',
-            color: 'var(--text-h)',
-            fontFamily: 'var(--mono)',
-            fontSize: '16px',
-            width: '100%',
-            boxSizing: 'border-box'
-          }}
-        />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+          <label style={{ fontSize: '0.85rem', color: 'var(--text)', fontWeight: 600 }}>Private Score Witness</label>
+          <input 
+            type="number" 
+            placeholder="Enter private value (e.g. 750)" 
+            value={scoreInput}
+            onChange={(e) => setScoreInput(e.target.value)}
+            disabled={isProving}
+            style={{
+              padding: '12px',
+              borderRadius: '6px',
+              border: '1px solid var(--border)',
+              background: 'var(--bg)',
+              color: 'var(--text-h)',
+              fontFamily: 'var(--mono)',
+              fontSize: '16px',
+              width: '100%',
+              boxSizing: 'border-box'
+            }}
+          />
+        </div>
         
         <button 
           onClick={executeCircuit} 
           disabled={isProving || !providers || !scoreInput}
+          style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            gap: '0.5rem',
+            padding: '12px',
+            cursor: (isProving || !providers || !scoreInput) ? 'not-allowed' : 'pointer',
+            opacity: (isProving || !providers || !scoreInput) ? 0.6 : 1
+          }}
         >
-          {isProving ? "Generating ZK Proof Locally..." : "Generate Proof & Submit"}
+          {isProving ? (
+            <>
+              <svg className="spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="2" x2="12" y2="6"></line>
+                <line x1="12" y1="18" x2="12" y2="22"></line>
+                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                <line x1="2" y1="12" x2="6" y2="12"></line>
+                <line x1="18" y1="12" x2="22" y2="12"></line>
+                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+              </svg>
+              Generating Proof...
+            </>
+          ) : (
+            "Generate Proof & Submit"
+          )}
         </button>
       </div>
 
@@ -131,16 +172,16 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
         <div style={{ 
           marginTop: '1.5rem', 
           padding: '1rem', 
-          background: txResult.startsWith('Error') ? 'rgba(255, 77, 79, 0.1)' : 'var(--code-bg)', 
-          border: `1px solid ${txResult.startsWith('Error') ? '#ff4d4f' : 'var(--border)'}`, 
+          background: txResult.startsWith('Error') ? 'rgba(255, 77, 79, 0.1)' : 'rgba(82, 196, 26, 0.1)', 
+          border: `1px solid ${txResult.startsWith('Error') ? '#ff4d4f' : '#52c41a'}`, 
           borderRadius: '6px',
           whiteSpace: 'pre-line',
           textAlign: 'left'
         }}>
-          <strong style={{ color: txResult.startsWith('Error') ? '#ff4d4f' : 'var(--text-h)' }}>
-            {txResult.startsWith('Error') ? 'Execution Failed' : 'Transaction Successful!'}
+          <strong style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: txResult.startsWith('Error') ? '#ff4d4f' : '#52c41a' }}>
+            {txResult.startsWith('Error') ? '❌ Execution Failed' : '🌐 On-Chain State Updated'}
           </strong>
-          <p style={{ fontFamily: 'var(--mono)', wordBreak: 'break-all', marginTop: '0.5rem', fontSize: '0.9rem' }}>
+          <p style={{ fontFamily: 'var(--mono)', wordBreak: 'break-all', marginTop: '0.5rem', fontSize: '0.9rem', color: 'var(--text-h)' }}>
             {txResult}
           </p>
         </div>

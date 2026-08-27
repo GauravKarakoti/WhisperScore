@@ -1,16 +1,17 @@
 pragma compiler_version >= 0.14.0;
 
-// PUBLIC STATE: The minimum required threshold
+// PUBLIC STATE
 export ledger requiredThreshold: Uint<32>;
+// Add a mapping to store if a user is eligible, fulfilling the "State Transition" requirement
+export ledger eligibilityRecord: Map<Bytes<32>, Boolean>;
 
 constructor(initialThreshold: Uint<32>) {
   requiredThreshold = disclose(initialThreshold);
 }
 
-// PRIVATE WITNESS: The user's actual value
+// PRIVATE WITNESS
 witness privateUserValue(): Uint<32>;
 
-// UPDATE: We add a public parameter to bind the computation to a specific user
 export circuit checkEligibility(userAddress: Bytes<32>): Boolean {
   const threshold = requiredThreshold;
   const userValue = privateUserValue();
@@ -18,11 +19,9 @@ export circuit checkEligibility(userAddress: Bytes<32>): Boolean {
   // Compute the comparison privately
   const isEligible = userValue >= threshold;
   
-  // OPTION A (Strict ZK Logic): 
-  // Halt execution locally if they don't meet the threshold. 
-  // assert isEligible; 
+  // STATE TRANSITION: Record the outcome on-chain without exposing the underlying score
+  eligibilityRecord.insert(userAddress, isEligible);
   
-  // OPTION B (Your Current Logic): 
   // Deliberately disclose the boolean result (Eligible/Not Eligible)
   return disclose(isEligible);
 }

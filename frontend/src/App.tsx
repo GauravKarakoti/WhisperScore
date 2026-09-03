@@ -4,7 +4,7 @@ import './App.css';
 
 function App() {
   // Utilizing the Preprod address
-  const PREPROD_CONTRACT_ADDRESS = "f4d16d72bf65cdadc91ca08e5938c13a7170c66cec434c24598f5993f01cdcde";
+  const PREPROD_CONTRACT_ADDRESS = "63f6806d5ebdcf5b1f18fea225fe993ebd956df5979d21d071a53e6813e3192e";
 
   return (
     <>

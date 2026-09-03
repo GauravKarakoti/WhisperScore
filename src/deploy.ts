@@ -25,7 +25,8 @@ globalThis.WebSocket = WebSocket;
 // ─── Types & Configuration ─────────────────────────────────────────────────────
 
 export interface WhisperScorePrivateState {
-  userScore: bigint;
+  ethBalance: bigint;
+  signature: Uint8Array;
 }
 
 const PRIVATE_STATE_ID = 'whisperScorePrivateState';
@@ -78,12 +79,15 @@ if (!fs.existsSync(contractPath)) {
 
 const WhisperScore = await import(pathToFileURL(contractPath).href);
 
-// Bind private witness directly to private state
+// Bind multi-chain private witnesses directly to private state
 const compiledContract = CompiledContract.make('whisper_score', WhisperScore.Contract as any).pipe(
   (CompiledContract.withWitnesses as any)({
-    privateUserValue: (context: { privateState: WhisperScorePrivateState }) => {
-      return context.privateState?.userScore ?? 750n;
+    externalChainBalance: (context: { privateState: WhisperScorePrivateState }) => {
+      return context.privateState?.ethBalance ?? 0n;
     },
+    stateSignature: (context: { privateState: WhisperScorePrivateState }) => {
+      return context.privateState?.signature ?? new Uint8Array(32);
+    }
   }),
   (CompiledContract.withCompiledFileAssets as any)(zkConfigPath),
 );
@@ -148,7 +152,7 @@ async function main() {
   }, 5000);
   const state = await walletCtx.wallet.waitForSyncedState();
   clearInterval(syncInterval);
-  process.stdout.write('\r  ✓ Synced with Midnight network.                             \n');
+  process.stdout.write('\r  ✓ Synced with Midnight network.                               \n');
 
   await persistWalletState(network, walletCtx);
 
@@ -261,8 +265,10 @@ async function main() {
         compiledContract: compiledContract as any,
         args: [initialThreshold],
         privateStateId: PRIVATE_STATE_ID,
+        // Passes the initial state for the multi-chain setup
         initialPrivateState: {
-          userScore: 750n,
+          ethBalance: 0n,
+          signature: new Uint8Array(32),
         },
       });
       break;

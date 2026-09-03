@@ -1,8 +1,6 @@
 pragma compiler_version >= 0.14.0;
 
-// PUBLIC STATE
 export ledger requiredThreshold: Uint<32>;
-// STATE TRANSITION TARGET: Keep a running tally of successful eligible users
 export ledger eligibleCount: Uint<32>;
 
 constructor(initialThreshold: Uint<32>) {
@@ -10,22 +8,28 @@ constructor(initialThreshold: Uint<32>) {
   eligibleCount = 0;
 }
 
-// PRIVATE WITNESS
-witness privateUserValue(): Uint<32>;
+// MULTI-CHAIN WITNESS: Read public state from another chain (e.g., Ethereum)
+witness externalChainBalance(): Uint<32>;
+// Simulates an Affect Stream or Oracle signature verifying the external state
+witness stateSignature(): Bytes<32>; 
 
 export circuit checkEligibility(): Boolean {
   const threshold = requiredThreshold;
-  const userValue = privateUserValue();
+  
+  // Pull the multi-chain data privately into the local circuit
+  const balance = externalChainBalance();
+  const signature = stateSignature();
+  
+  // In a production Affect Stream integration, you would assert the validity 
+  // of the signature or Merkle proof here to prevent spoofing:
+  // assert verifySignature(signature, ...);
   
   // Compute the comparison privately
-  const isEligible = userValue >= threshold;
+  const isEligible = balance >= threshold;
   
-  // STATE TRANSITION: Convert the boolean into a numeric increment
+  // Convert boolean to numeric increment and disclose to the public ledger
   const increment = (isEligible as Field) as Uint<32>;
-  
-  // Explicitly disclose the arithmetic result to commit it to the public ledger
   eligibleCount = disclose((eligibleCount + increment) as Uint<32>);
   
-  // Disclose and return the boolean result
   return disclose(isEligible);
 }

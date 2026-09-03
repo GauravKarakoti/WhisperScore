@@ -1,27 +1,25 @@
 import React, { useState } from 'react';
-import * as whisperScoreContract from '../contracts/whisper_score/contract/index.js';
+import { ethers } from 'ethers';
+import * as whisperScoreContract from '../contracts/managed/whisper_score/contract/index.js';
 import { findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { useMidnight } from '../hooks/useMidnight.tsx';
-
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
 
 export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAddress }) => {
   const [isProving, setIsProving] = useState(false);
   const [txResult, setTxResult] = useState<string | null>(null);
-  const [scoreInput, setScoreInput] = useState<string>(''); 
+  const [ethAddress, setEthAddress] = useState<string>(''); 
 
   const { providers } = useMidnight();
   
   const executeCircuit = async () => {
     if (!providers) {
-      console.error("Midnight providers are not initialized.");
       setTxResult("Error: Please connect your wallet first.");
       return;
     }
-
-    if (!scoreInput || isNaN(Number(scoreInput))) {
-      setTxResult("Error: Please enter a valid numeric score.");
+    if (!ethAddress || !ethers.isAddress(ethAddress)) {
+      setTxResult("Error: Please enter a valid Ethereum address.");
       return;
     }
 
@@ -29,8 +27,13 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
     setTxResult(null);
 
     try {
-      const userPrivateScore = BigInt(scoreInput); 
+      // 1. Fetch Cross-Chain Data (Affect Stream Simulation)
+      const ethProvider = new ethers.JsonRpcProvider('https://cloudflare-eth.com');
+      const balanceWei = await ethProvider.getBalance(ethAddress);
+      // Simplify balance to a whole number for the Uint32 circuit requirement
+      const balanceEth = BigInt(Math.floor(Number(ethers.formatEther(balanceWei))));
 
+      // 2. Midnight Providers Configuration
       const config = await providers.getConfiguration();
       const shieldedState = await providers.getShieldedAddresses();
 
@@ -63,10 +66,15 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
           set: async (id: string, state: any) => { inMemoryPrivateState[id] = state; },
           remove: async (id: string) => { delete inMemoryPrivateState[id]; }
         },
-        privateUserValue: (witnessContext: any) => [
+        // Feed the cross-chain data into the local circuit
+        externalChainBalance: (witnessContext: any) => [
           witnessContext.currentPrivateState ?? undefined, 
-          userPrivateScore // Injected locally into the ZK proof generation
+          balanceEth
         ],
+        stateSignature: (witnessContext: any) => [
+          witnessContext.currentPrivateState ?? undefined,
+          new Uint8Array(32) // Mock signature payload for Affect Stream
+        ]
       } as any; 
 
       const compiledContract = {
@@ -96,30 +104,26 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
     <div style={{ padding: '2rem' }}>
       <style>
         {`
-          @keyframes spin {
-            100% { transform: rotate(360deg); }
-          }
-          .spinner {
-            animation: spin 2s linear infinite;
-          }
+          @keyframes spin { 100% { transform: rotate(360deg); } }
+          .spinner { animation: spin 2s linear infinite; }
         `}
       </style>
       
       <h3 style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <span>🔒</span> Verify Eligibility
+        <span>🔗</span> Cross-Chain Eligibility
       </h3>
       <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.95rem', lineHeight: '1.5' }}>
-        Enter your score. It remains strictly <strong>encrypted on your device</strong> and is never broadcast to the public ledger.
+        Enter an Ethereum address. The balance is fetched and evaluated via a Zero-Knowledge proof <strong>locally on your device</strong>.
       </p>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-          <label style={{ fontSize: '0.85rem', color: 'var(--text)', fontWeight: 600 }}>Private Score Witness</label>
+          <label style={{ fontSize: '0.85rem', color: 'var(--text)', fontWeight: 600 }}>Ethereum Address</label>
           <input 
-            type="number" 
-            placeholder="Enter private value (e.g. 750)" 
-            value={scoreInput}
-            onChange={(e) => setScoreInput(e.target.value)}
+            type="text" 
+            placeholder="0x..." 
+            value={ethAddress}
+            onChange={(e) => setEthAddress(e.target.value)}
             disabled={isProving}
             style={{
               padding: '12px',
@@ -137,15 +141,15 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
         
         <button 
           onClick={executeCircuit} 
-          disabled={isProving || !providers || !scoreInput}
+          disabled={isProving || !providers || !ethAddress}
           style={{ 
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center', 
             gap: '0.5rem',
             padding: '12px',
-            cursor: (isProving || !providers || !scoreInput) ? 'not-allowed' : 'pointer',
-            opacity: (isProving || !providers || !scoreInput) ? 0.6 : 1
+            cursor: (isProving || !providers || !ethAddress) ? 'not-allowed' : 'pointer',
+            opacity: (isProving || !providers || !ethAddress) ? 0.6 : 1
           }}
         >
           {isProving ? (
@@ -160,10 +164,10 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
                 <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
                 <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
               </svg>
-              Generating Proof...
+              Fetching & Proving...
             </>
           ) : (
-            "Generate Proof & Submit"
+            "Verify Cross-Chain Balance"
           )}
         </button>
       </div>
@@ -179,7 +183,7 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
           textAlign: 'left'
         }}>
           <strong style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: txResult.startsWith('Error') ? '#ff4d4f' : '#52c41a' }}>
-            {txResult.startsWith('Error') ? '❌ Execution Failed' : '🌐 On-Chain State Updated'}
+            {txResult.startsWith('Error') ? '❌ Verification Failed' : '🌐 On-Chain State Updated'}
           </strong>
           <p style={{ fontFamily: 'var(--mono)', wordBreak: 'break-all', marginTop: '0.5rem', fontSize: '0.9rem', color: 'var(--text-h)' }}>
             {txResult}

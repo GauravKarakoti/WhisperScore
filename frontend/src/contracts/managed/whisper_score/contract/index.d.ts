@@ -1,7 +1,8 @@
 import type * as __compactRuntime from '@midnight-ntwrk/compact-runtime';
 
 export type Witnesses<PS> = {
-  privateUserValue(context: __compactRuntime.WitnessContext<Ledger, PS>): [PS, bigint];
+  externalChainBalance(context: __compactRuntime.WitnessContext<Ledger, PS>): [PS, bigint];
+  stateSignature(context: __compactRuntime.WitnessContext<Ledger, PS>): [PS, Uint8Array];
 }
 
 export type ImpureCircuits<PS> = {

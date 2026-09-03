@@ -16,12 +16,21 @@
   ],
   "witnesses": [
     {
-      "name": "privateUserValue",
+      "name": "externalChainBalance",
       "arguments": [
       ],
       "result type": {
         "type-name": "Uint",
         "maxval": 4294967295
+      }
+    },
+    {
+      "name": "stateSignature",
+      "arguments": [
+      ],
+      "result type": {
+        "type-name": "Bytes",
+        "length": 32
       }
     }
   ],

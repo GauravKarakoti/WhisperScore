@@ -1,6 +1,6 @@
 # WhisperScore
 [![Midnight dApp CI](https://github.com/GauravKarakoti/WhisperScore/actions/workflows/ci.yml/badge.svg)](https://github.com/GauravKarakoti/WhisperScore/actions/workflows/ci.yml)
-> A decentralized application utilizing Midnight network to provide which lets users prove they meet a threshold to access a service without ever revealing the actual number.
+> A decentralized identity and reputation protocol built on the Midnight Network that allows users to cryptographically prove their cumulative "power user" status without ever linking their wallets publicly or exposing their exact financial history.
 
 ## [Live Demo](https://whisper-score-steel.vercel.app/)
 
@@ -8,21 +8,23 @@
 | Network  | Address                                                            |
 |----------|--------------------------------------------------------------------|
 | Preview  | `16be13f4d0aa666121fc6be71836e99d88cdbb1ce25e2438c559304d7a9cf10f` |
-| Preprod  | `f4d16d72bf65cdadc91ca08e5938c13a7170c66cec434c24598f5993f01cdcde` |
+| Preprod  | `63f6806d5ebdcf5b1f18fea225fe993ebd956df5979d21d071a53e6813e3192e` |
 
 ## What This Does
-WhisperScore replaces full data disclosure with programmable selective disclosure. A user can prove “my FICO score > 700” or “I have completed ≥ 10 gym sessions this month” without giving away the precise number. A verifier receives only a cryptographic “yes/no” proof that the user’s private value meets the required cutoff.
+WhisperScore acts as an omni-chain reputation and Sybil resistance oracle. Currently, to prove "power user" status for premium airdrops, DAO voting weight, or undercollateralized loans, users are forced to publicly link their scattered Web3 wallets (exposing cold storage vaults to hot wallets). 
+
+WhisperScore replaces this with programmable selective disclosure. A user can locally aggregate their transaction history and prove "my total accumulated volume across all my wallets > $10,000" or "my wallets are older than 1 year" without ever publishing those addresses on-chain. The verifying protocol receives only a cryptographic "yes/no" proof.
 
 ## Privacy Model
-- What is PUBLIC (on-chain, visible to anyone): The required threshold (e.g., 700) and the final boolean result (Eligible/Not Eligible).
-- What is PRIVATE (private witness, never on-chain): The user's actual value (e.g., their exact credit score or exact number of gym visits).
-- What the user PROVES without revealing: That their private value is greater than or equal to the public threshold, computed securely using a zero-knowledge circuit.
+- **What is PUBLIC (on-chain, visible to anyone):** The required threshold (e.g., cumulative volume > $10,000) and the final boolean attestation (Verified Power User / Not Verified).
+- **What is PRIVATE (private witness, never on-chain):** The user's actual wallet addresses, exact balances, raw transaction histories, and the links between their fragmented accounts.
+- **What the user PROVES without revealing:** That the aggregated metrics of their privately controlled wallets meet or exceed the public threshold, computed securely using a local zero-knowledge circuit.
 
 ## Privacy Claim
-On-chain observers can see that a transaction was executed and verified against the Compact circuit, but they cannot deduce the specific private inputs used by the user to generate the proof locally. 
+On-chain observers can see that an identity attestation was executed and verified against the Compact circuit, but they cannot deduce the specific private wallet addresses or financial data used by the user to generate the proof locally. This protects the user entirely from graph-based wallet surveillance while still allowing them to leverage their reputation.
 
 ## Tech Stack
-- Midnight network, Compact, Midnight.js SDK, React/Vite, Lace wallet, Node.js v22, Docker
+- Midnight Network, Compact, Midnight.js SDK, React/Vite, Lace Wallet, Node.js v22, Docker
 
 ## Prerequisites
 - Node.js v22
@@ -33,19 +35,19 @@ On-chain observers can see that a transaction was executed and verified against 
 ## Setup
 1. Clone the repository
 2. Run `npm install`
-3. Ensure Docker is running and run `docker run -d -p 6300:6300 midnightnetwork/proof-server`
+3. Ensure Docker is running and execute: `docker run -d -p 6300:6300 midnightnetwork/proof-server`
 4. Compile the contract using `compact compile`
 
 ## Run Tests
-Run `npm test` to execute the test suite covering circuit logic and privacy constraints.
+Run `npm test` to execute the test suite covering circuit logic, cross-chain state aggregation, and privacy constraints.
 
 ## CI/CD
 This project uses GitHub Actions to run a CI/CD pipeline. On every push to the `main` branch, the pipeline checks out the code, installs dependencies, compiles the Compact smart contract, and runs the test suite to ensure no breaking changes are introduced.
 
 ## [Product Proposal](./Proposal.md)
 
-## Initial Idea
-WhisperScore lets users prove they meet a threshold (credit score, income level, health metric, membership tier) to access a service, discount, or loan—without ever revealing the actual number or underlying documents. A verifier (e.g., a lender, gym, insurer) receives only a cryptographic “yes/no” proof that the user’s private value is above (or below) a required cutoff. The user’s data stays encrypted on Midnight’s shielded ledger; the business sees only the proof they need for compliance or business logic.
+## The Core Concept
+WhisperScore is a decentralized omni-chain reputation protocol built on the Midnight Network that allows users to cryptographically prove their cumulative "power user" status across multiple fragmented Web3 wallets without doxxing their transaction history or exposing themselves to graph-based wallet surveillance. By aggregating state data from various addresses locally, WhisperScore utilizes a Midnight Compact circuit to verify that the user's combined metrics meet a specific smart contract threshold, subsequently emitting a shielded binary attestation to the public ledger. This provides dApps, DAOs, and lending platforms with a highly reliable, Sybil-resistant credential while empowering users to leverage their hard-earned cross-chain reputation without sacrificing their financial privacy.
 
 ## Screenshots
 ![Test Screenshot](./test.png)

@@ -1,49 +1,50 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useMidnight } from '../hooks/useMidnight.tsx';
 
 export const WalletConnect: React.FC = () => {
   const { address, error, connectWallet, disconnectWallet } = useMidnight();
 
+  // Generate a deterministic gradient avatar based on the address
+  const avatarGradient = useMemo(() => {
+    if (!address) return '';
+    const color1 = `#${address.slice(0, 6)}`;
+    const color2 = `#${address.slice(6, 12)}`;
+    return `linear-gradient(135deg, ${color1}, ${color2})`;
+  }, [address]);
+
   return (
     <div style={{ padding: '2rem' }}>
-      <h3 style={{ marginBottom: '0.5rem' }}>Lace Wallet</h3>
-      <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.95rem', lineHeight: '1.5' }}>
-        Connect your Lace wallet (Preprod network) to interact with the circuit.
-      </p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+        <div>
+          <h3 style={{ marginBottom: '0.3rem' }}>Lace Wallet</h3>
+          <p style={{ color: 'var(--text)', fontSize: '0.9rem', margin: 0 }}>
+            Connect to Midnight Preprod
+          </p>
+        </div>
+        {address && (
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: avatarGradient, border: '2px solid var(--border)' }} />
+        )}
+      </div>
       
       {error && (
-        <div style={{ marginBottom: '1rem', padding: '0.8rem', color: '#ff4d4f', background: 'rgba(255, 77, 79, 0.1)', border: '1px solid #ff4d4f', borderRadius: '6px', fontSize: '0.9rem' }}>
-          <strong>Connection Error:</strong><br/>{error}
+        <div className="alert alert-error mb-4">
+          <strong>Connection Error</strong>
+          <p>{error.includes('install') ? 'Lace wallet extension not found. Please install it to continue.' : error}</p>
         </div>
       )}
       
       {!address ? (
-        <button onClick={connectWallet} style={{ width: '100%', padding: '12px' }}>
+        <button onClick={connectWallet} className="action-btn w-100">
           Connect Wallet
         </button>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ 
-            padding: '12px', 
-            background: 'var(--code-bg)', 
-            borderRadius: '6px', 
-            border: '1px solid var(--border)',
-            fontFamily: 'var(--mono)',
-            fontSize: '15px',
-            color: 'var(--text-h)',
-            textAlign: 'center',
-            wordBreak: 'break-all'
-          }}>
-            {address.slice(0, 12)}...{address.slice(-10)}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+          <div className="address-display">
+            {address.slice(0, 10)}...{address.slice(-8)}
           </div>
           <button 
             onClick={disconnectWallet} 
-            style={{ 
-              background: 'transparent', 
-              color: '#ff4d4f', 
-              border: '1px solid #ff4d4f',
-              padding: '12px'
-            }}
+            className="action-btn outline w-100"
           >
             Disconnect
           </button>

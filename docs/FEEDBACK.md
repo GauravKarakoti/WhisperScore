@@ -17,9 +17,9 @@ Direct outreach via Discord channels, Telegram developer groups, and Twitter (X)
 * **Prover Latency & UI Locking:** Local Compact circuit execution requires an explicit spinner and disabled button state to prevent duplicate calls.
 * **Input Sanitization & Context:** The client must reject non-positive values before executing proof circuits, and tier classifications need visual context.
 
-## What We Changed
-| Change | Reason | Commit |
-|--------|--------|--------|
-| Added faucet banner and Preprod tDUST guidance link in `WalletConnect.tsx` | Eliminates failed zero-gas transactions for first-time testers | `28a122f` |
-| Added loading spinner and disabled state during proof generation in `VerifyPowerUser.tsx` | Prevents duplicated prover computations and stabilizes wallet state | `8727bb4` |
-| Implemented client-side input validation and added score tier legend | Eliminates raw circuit panic errors and provides scoring context | `8727bb4` |
+## Level 6 Improvements
+| Change | User Feedback That Triggered It | Status |
+|--------|--------------------------------|--------|
+| Added faucet banner & Preprod tDUST link in `WalletConnect.tsx` | Users didn't know how to get tDUST and tried zero-gas transactions. | Implemented (Commit `28a122f`) |
+| Added loading spinner & disabled state in `VerifyPowerUser.tsx` | App appeared frozen during 3-5s ZK proof generation, causing accidental double clicks. | Implemented (Commit `8727bb4`) |
+| Added client-side input validation & score tier legend | Negative inputs caused circuit runtime errors; users wanted visual context for the threshold metrics. | Implemented (Commit `8727bb4`) |

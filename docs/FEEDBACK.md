@@ -21,5 +21,5 @@ Direct outreach via Discord channels, Telegram developer groups, and Twitter (X)
 | Change | Reason | Commit |
 |--------|--------|--------|
 | Added faucet banner and Preprod tDUST guidance link in `WalletConnect.tsx` | Eliminates failed zero-gas transactions for first-time testers | `9bf1d2a` |
-| Added loading spinner and disabled state during proof generation in `VerifyPowerUser.tsx` | Prevents duplicated prover computations and stabilizes wallet state | `4c82e11` |
-| Implemented client-side input validation and added score tier legend | Eliminates raw circuit panic errors and provides scoring context | `7a19f03` |
+| Added loading spinner and disabled state during proof generation in `VerifyPowerUser.tsx` | Prevents duplicated prover computations and stabilizes wallet state | `8727bb4` |
+| Implemented client-side input validation and added score tier legend | Eliminates raw circuit panic errors and provides scoring context | `8727bb4` |

@@ -50,6 +50,27 @@ export const WalletConnect: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Faucet Guidance Banner */}
+      <div style={{ 
+        marginTop: '1.5rem', 
+        paddingTop: '1rem', 
+        borderTop: '1px solid var(--border)', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center', 
+        fontSize: '0.85rem' 
+      }}>
+        <span style={{ color: 'var(--text)', opacity: 0.8 }}>Need test gas? Transactions require tDUST.</span>
+        <a 
+          href="https://faucet.preprod.midnight.network" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          style={{ color: '#0ea5e9', textDecoration: 'none', fontWeight: '600' }}
+        >
+          Get Preprod tDUST &rarr;
+        </a>
+      </div>
     </div>
   );
 };

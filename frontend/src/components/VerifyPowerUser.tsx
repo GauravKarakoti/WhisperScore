@@ -12,12 +12,24 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
   const [txResult, setTxResult] = useState<{ hash: string; result: string } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isRevealed, setIsRevealed] = useState(false);
+  const [thresholdInput, setThresholdInput] = useState<string>('50'); // Added threshold state
 
   const { providers } = useMidnight();
   
   const handleVerify = async () => {
     if (!providers) {
       setErrorMsg("Wallet disconnected. Please connect your Lace wallet to proceed.");
+      return;
+    }
+
+    // Input Validation: Reject negative, decimal, or excessive values before circuit execution
+    const parsedThreshold = Number(thresholdInput);
+    if (isNaN(parsedThreshold) || parsedThreshold < 0 || !Number.isInteger(parsedThreshold)) {
+      setErrorMsg("Please enter a valid positive integer for the score threshold.");
+      return;
+    }
+    if (parsedThreshold > 1000) {
+      setErrorMsg("Score threshold cannot exceed maximum range (1000).");
       return;
     }
 
@@ -108,6 +120,7 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
       });
 
       setProveState('submitting');
+      // If your contract accepts the threshold parameter, pass `parsedThreshold` here
       const tx = await whisperScore.callTx.checkEligibility();
 
       setTxResult({
@@ -142,6 +155,41 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
       </p>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+        
+        {/* Score Threshold Input */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          <label style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--text)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+            Minimum Score Threshold
+          </label>
+          <input 
+            type="number" 
+            min="0" 
+            max="1000" 
+            value={thresholdInput}
+            onChange={(e) => setThresholdInput(e.target.value)}
+            disabled={proveState !== 'idle' || !providers}
+            style={{ 
+              padding: '0.8rem', 
+              borderRadius: '8px', 
+              border: '1px solid var(--border)', 
+              background: 'transparent', 
+              color: 'var(--text)',
+              fontSize: '1rem'
+            }}
+            placeholder="e.g. 50"
+          />
+        </div>
+
+        {/* Tier Legend */}
+        <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.1)', borderRadius: '8px', border: '1px solid var(--border)', fontSize: '0.85rem', color: 'var(--text)' }}>
+          <strong style={{ display: 'block', marginBottom: '0.5rem' }}>Tier Legend:</strong>
+          <div style={{ display: 'flex', justifyContent: 'space-between', textAlign: 'center', gap: '0.5rem' }}>
+            <div style={{ flex: 1, padding: '0.3rem', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>Bronze: 1–49</div>
+            <div style={{ flex: 1, padding: '0.3rem', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>Silver: 50–99</div>
+            <div style={{ flex: 1, padding: '0.3rem', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>Gold: 100+</div>
+          </div>
+        </div>
+
         <button 
           onClick={handleVerify} 
           disabled={proveState !== 'idle' || !providers}

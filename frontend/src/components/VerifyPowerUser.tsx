@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import * as whisperScoreContract from '../contracts/managed/whisper_score/contract/index.js';
 import { findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
-import { useMidnight } from '../hooks/useMidnight.tsx';
+import { useMidnight } from '../hooks/useMidnight';
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
 
 type ProveState = 'idle' | 'fetching' | 'proving' | 'submitting';
 
-export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAddress }) => {
+export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contractAddress }) => {
   const [proveState, setProveState] = useState<ProveState>('idle');
   const [txResult, setTxResult] = useState<{ hash: string; result: string } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -15,7 +15,7 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
 
   const { providers } = useMidnight();
   
-  const executeCircuit = async () => {
+  const handleVerify = async () => {
     if (!providers) {
       setErrorMsg("Wallet disconnected. Please connect your Lace wallet to proceed.");
       return;
@@ -128,22 +128,22 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
       case 'fetching': return 'Fetching Wallet State...';
       case 'proving': return 'Generating ZK Proof...';
       case 'submitting': return 'Submitting to Midnight...';
-      default: return 'Verify Eligibility Score';
+      default: return 'Verify Power User Status';
     }
   };
 
   return (
     <div style={{ padding: '2rem' }}>
       <h3 style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <span>🔗</span> Eligibility Verification
+        <span>🏆</span> Verify Power User Status
       </h3>
       <p style={{ color: 'var(--text)', marginBottom: '1.5rem', fontSize: '0.95rem', lineHeight: '1.5' }}>
-        Your connected wallet balance is evaluated via a Zero-Knowledge proof <strong>locally on your device</strong>.
+        Prove your aggregated wallet history without doxxing your addresses. Your connected wallet balance is evaluated via a Zero-Knowledge proof <strong>locally on your device</strong>.
       </p>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
         <button 
-          onClick={executeCircuit} 
+          onClick={handleVerify} 
           disabled={proveState !== 'idle' || !providers}
           className={`action-btn ${proveState !== 'idle' ? 'loading' : ''}`}
         >
@@ -161,7 +161,7 @@ export const CircuitCall: React.FC<{ contractAddress: string }> = ({ contractAdd
 
       {txResult && (
         <div className="alert alert-success mt-4">
-          <strong>🌐 On-Chain State Updated</strong>
+          <strong>✅ Successfully verified on-chain!</strong>
           <p style={{ marginBottom: '0.5rem' }}>Tx Hash: <span style={{ fontFamily: 'var(--mono)', fontSize: '0.85rem' }}>{txResult.hash}</span></p>
           
           <div 

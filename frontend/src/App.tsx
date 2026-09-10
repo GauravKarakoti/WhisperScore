@@ -1,5 +1,5 @@
 import { WalletConnect } from './components/WalletConnect';
-import { CircuitCall } from './components/CircuitCall';
+import { VerifyPowerUser } from './components/VerifyPowerUser';
 import './App.css';
 
 function App() {
@@ -18,7 +18,7 @@ function App() {
         </div>
         
         <div className="card-container">
-          <CircuitCall contractAddress={PREPROD_CONTRACT_ADDRESS} />
+          <VerifyPowerUser contractAddress={PREPROD_CONTRACT_ADDRESS} />
         </div>
       </section>
 

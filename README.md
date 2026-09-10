@@ -11,6 +11,18 @@
 | Preview  | `16be13f4d0aa666121fc6be71836e99d88cdbb1ce25e2438c559304d7a9cf10f`   |
 | Preprod  | `63f6806d5ebdcf5b1f18fea225fe993ebd956df5979d21d071a53e6813e3192e`   |
 
+## Level 5 - User Validation & Iteration
+- **Target:** 50 Preprod users
+- **Current Verified:** 50 / 50
+- **User Directory:** See [`USERS.md`](./USERS.md) for full verified addresses.
+- **Feedback & Changes:** See [`docs/FEEDBACK.md`](./docs/FEEDBACK.md) for raw feedback logs, feedback themes, and applied code iterations.
+
+### UI & UX Improvements Implemented in Level 5:
+* **Gas Onboarding:** Added direct Midnight Preprod faucet assistance inside the wallet connection card.
+* **ZK Prover Feedback:** Integrated async status loaders during Compact witness and proof generation to lock UI controls.
+* **Input Sanitization:** Guarded proof execution against negative/decimal values with native frontend validation.
+* **Context Legend:** Added Bronze, Silver, and Gold tier breakdowns for threshold comparisons.
+
 ## What This Product Does
 WhisperScore acts as an omni-chain reputation and Sybil resistance oracle. Currently, to prove "power user" status for premium airdrops, DAO voting weight, or undercollateralized loans, users are forced to publicly link their scattered Web3 wallets (exposing cold storage vaults to hot wallets). 
 

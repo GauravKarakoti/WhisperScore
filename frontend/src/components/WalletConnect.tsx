@@ -4,7 +4,6 @@ import { useMidnight } from '../hooks/useMidnight.tsx';
 export const WalletConnect: React.FC = () => {
   const { address, error, connectWallet, disconnectWallet } = useMidnight();
 
-  // Generate a deterministic gradient avatar based on the address
   const avatarGradient = useMemo(() => {
     if (!address) return '';
     const color1 = `#${address.slice(0, 6)}`;
@@ -13,16 +12,23 @@ export const WalletConnect: React.FC = () => {
   }, [address]);
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+    <div className="card-body">
+      <div className="card-header">
         <div>
-          <h3 style={{ marginBottom: '0.3rem' }}>Lace Wallet</h3>
-          <p style={{ color: 'var(--text)', fontSize: '0.9rem', margin: 0 }}>
-            Connect to Midnight Preprod
-          </p>
+          <h3>Lace Wallet</h3>
+          <p>Connect to Midnight Preprod</p>
         </div>
         {address && (
-          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: avatarGradient, border: '2px solid var(--border)' }} />
+          <div 
+            style={{ 
+              width: '48px', 
+              height: '48px', 
+              borderRadius: '50%', 
+              background: avatarGradient, 
+              border: '2px solid var(--border)',
+              boxShadow: 'var(--shadow-sm)'
+            }} 
+          />
         )}
       </div>
       
@@ -34,39 +40,30 @@ export const WalletConnect: React.FC = () => {
       )}
       
       {!address ? (
-        <button onClick={connectWallet} className="action-btn w-100">
+        <button onClick={connectWallet} className="action-btn">
           Connect Wallet
         </button>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <div className="address-display">
-            {address.slice(0, 10)}...{address.slice(-8)}
+            {address.slice(0, 12)}...{address.slice(-10)}
           </div>
           <button 
             onClick={disconnectWallet} 
-            className="action-btn outline w-100"
+            className="action-btn outline"
           >
             Disconnect
           </button>
         </div>
       )}
 
-      {/* Faucet Guidance Banner */}
-      <div style={{ 
-        marginTop: '1.5rem', 
-        paddingTop: '1rem', 
-        borderTop: '1px solid var(--border)', 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center', 
-        fontSize: '0.85rem' 
-      }}>
-        <span style={{ color: 'var(--text)', opacity: 0.8 }}>Need test gas? Transactions require tDUST.</span>
+      <div style={{ marginTop: '2rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem' }}>
+        <span style={{ color: 'var(--text)' }}>Need test gas?</span>
         <a 
           href="https://faucet.preprod.midnight.network" 
           target="_blank" 
           rel="noopener noreferrer"
-          style={{ color: '#0ea5e9', textDecoration: 'none', fontWeight: '600' }}
+          style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: '600' }}
         >
           Get Preprod tDUST &rarr;
         </a>

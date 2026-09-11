@@ -1,5 +1,6 @@
 import { WalletConnect } from './components/WalletConnect';
 import { VerifyPowerUser } from './components/VerifyPowerUser';
+import heroImage from './assets/hero.png';
 import './App.css';
 
 function App() {
@@ -7,9 +8,21 @@ function App() {
 
   return (
     <>
-      <header className="header">
-        <h1>WhisperScore</h1>
-        <p>Programmable Selective Disclosure on Midnight</p>
+      <nav className="navbar">
+        <div className="logo-container">
+          <img src="/logo.png" alt="WhisperScore Logo" className="logo" />
+          <div className="logo-text">WhisperScore</div>
+        </div>
+      </nav>
+
+      <header className="hero">
+        <div className="hero-text">
+          <h1>Programmable Selective Disclosure on Midnight</h1>
+          <p>Generate zero-knowledge proofs of your on-chain reputation. Your data never leaves your device.</p>
+        </div>
+        <div className="hero-image-container">
+          <img src={heroImage} alt="Abstract Representation of ZK Proofs" className="hero-image" />
+        </div>
       </header>
 
       <section id="center">
@@ -22,10 +35,9 @@ function App() {
         </div>
       </section>
 
-      <div className="ticks"></div>
-
       <footer id="spacer">
-        <p>Proved locally. Verified on-chain. Your data never leaves your device.</p>
+        <p>Proved locally. Verified on-chain.</p>
+        <p>Built for the Midnight Network.</p>
       </footer>
     </>
   );

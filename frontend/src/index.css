@@ -1,58 +1,19 @@
-:root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #ffffff;
-  --bg-secondary: #faf9f8;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-hover: #902be6;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --success: #10b981;
-  --error: #ef4444;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --heading: 'Inter', system-ui, -apple-system, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
-
-  font: 16px/1.5 var(--sans);
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #0f111a;
-    --bg-secondary: #161822;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-hover: #d8b4fe;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-50 font-sans antialiased selection:bg-cyan-500/30;
+    margin: 0;
   }
 }
 
-#root {
-  width: 100%;
-  margin: 0 auto;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+@layer utilities {
+  .glass-panel {
+    @apply bg-slate-900/50 border border-slate-800 rounded-2xl shadow-xl backdrop-blur-sm overflow-hidden hover:border-indigo-500/50 transition-all duration-300;
+  }
+  .action-btn {
+    @apply w-full py-3 px-4 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white rounded-xl font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2;
+  }
 }
-
-body { margin: 0; background-color: var(--bg); }
-h1, h2, h3, h4 { font-family: var(--heading); font-weight: 600; color: var(--text-h); margin: 0; }
-p { margin: 0; }

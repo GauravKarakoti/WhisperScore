@@ -229,16 +229,19 @@ export class Contract {
                                                                                               result: undefined } }]).value);
     const balance_0 = this._externalChainBalance_0(context, partialProofData);
     const signature_0 = this._stateSignature_0(context, partialProofData);
+    const MAX_ALLOWED_BALANCE_0 = 1000000000n;
+    __compactRuntime.assert(balance_0 <= MAX_ALLOWED_BALANCE_0,
+                            'Balance exceeds maximum allowed bounds');
     const isEligible_0 = balance_0 >= threshold_0;
     const increment_0 = ((t1) => {
                           if (t1 > 4294967295n) {
-                            throw new __compactRuntime.CompactError('whisper_score.compact line 31 char 21: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 4294967295');
+                            throw new __compactRuntime.CompactError('whisper_score.compact line 35 char 21: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 4294967295');
                           }
                           return t1;
                         })(isEligible_0 ? 1n : 0n);
     const tmp_0 = ((t1) => {
                     if (t1 > 4294967295n) {
-                      throw new __compactRuntime.CompactError('whisper_score.compact line 32 char 28: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 4294967295');
+                      throw new __compactRuntime.CompactError('whisper_score.compact line 36 char 28: cast from Field or Uint value to smaller Uint value failed: ' + t1 + ' is greater than 4294967295');
                     }
                     return t1;
                   })(_descriptor_0.fromValue(__compactRuntime.queryLedgerState(context,

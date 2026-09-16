@@ -23,6 +23,7 @@ export type Circuits<PS> = {
 export type Ledger = {
   readonly requiredThreshold: bigint;
   readonly eligibleCount: bigint;
+  readonly oraclePublicKey: Uint8Array;
 }
 
 export type ContractReferenceLocations = any;
@@ -36,7 +37,8 @@ export declare class Contract<PS = any, W extends Witnesses<PS> = Witnesses<PS>>
   provableCircuits: ProvableCircuits<PS>;
   constructor(witnesses: W);
   initialState(context: __compactRuntime.ConstructorContext<PS>,
-               initialThreshold_0: bigint): __compactRuntime.ConstructorResult<PS>;
+               initialThreshold_0: bigint,
+               oraclePubKey_0: Uint8Array): __compactRuntime.ConstructorResult<PS>;
 }
 
 export declare function ledger(state: __compactRuntime.StateValue | __compactRuntime.ChargedState): Ledger;

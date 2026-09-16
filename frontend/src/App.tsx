@@ -3,7 +3,7 @@ import { VerifyPowerUser } from './components/VerifyPowerUser';
 import heroImage from './assets/hero.png';
 
 function App() {
-  const PREPROD_CONTRACT_ADDRESS = "63f6806d5ebdcf5b1f18fea225fe993ebd956df5979d21d071a53e6813e3192e";
+  const PREPROD_CONTRACT_ADDRESS = "32587300f95d1620fecbeb4914ef1be44b95e7a3cbd659e661d38ba83827871d";
 
   return (
     <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950 flex flex-col">

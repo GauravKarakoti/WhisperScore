@@ -1,15 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useMidnight } from '../hooks/useMidnight';
 
 export const WalletConnect: React.FC = () => {
   const { address, error, connectWallet, disconnectWallet } = useMidnight();
-
-  const avatarGradient = useMemo(() => {
-    if (!address) return '';
-    const color1 = `#${address.slice(0, 6)}`;
-    const color2 = `#${address.slice(6, 12)}`;
-    return `linear-gradient(135deg, ${color1}, ${color2})`;
-  }, [address]);
 
   return (
     <div className="p-8 flex flex-col h-full relative">

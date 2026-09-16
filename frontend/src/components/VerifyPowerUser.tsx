@@ -130,9 +130,9 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
 
   const getButtonText = () => {
     switch (proveState) {
-      case 'fetching': return 'Fetching State...';
-      case 'proving': return 'Generating ZK Proof...';
-      case 'submitting': return 'Submitting Tx...';
+      case 'fetching': return 'Syncing Shielded State...';
+      case 'proving': return 'Computing ZK Proof Local...';
+      case 'submitting': return 'Awaiting Block Confirmation...';
       default: return 'Verify Score Locally';
     }
   };

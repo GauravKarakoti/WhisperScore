@@ -91,3 +91,7 @@ See [`LAUNCH_USERS.md`](./LAUNCH_USERS.md)
 ## Demo Video & Screenshots
 ![Test Screenshot](./test.png)
 **Demo Video:** [PLACEHOLDER — Add the link after recording]
+
+## Security Assumptions
+* **Circuit Bounds:** The `checkEligibility` circuit enforces a hardcap on `externalChainBalance` (`1,000,000,000`) to prevent overflow exploits during the Field-to-Uint conversion.
+* **Prover Isolation:** Proofs are strictly generated on the client side. The wallet daemon passes the compiled witness directly to the local Midnight proof server, ensuring the private key and signature inputs never touch the network layer.

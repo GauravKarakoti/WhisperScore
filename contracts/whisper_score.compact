@@ -20,6 +20,10 @@ export circuit checkEligibility(): Boolean {
   const balance = externalChainBalance();
   const signature = stateSignature();
   
+  // SECURITY: Prevent overflow attacks and unreasonable bounds
+  const MAX_ALLOWED_BALANCE: Uint<32> = 1000000000;
+  assert balance <= MAX_ALLOWED_BALANCE "Balance exceeds maximum allowed bounds";
+  
   // In a production Affect Stream integration, you would assert the validity 
   // of the signature or Merkle proof here to prevent spoofing:
   // assert verifySignature(signature, ...);

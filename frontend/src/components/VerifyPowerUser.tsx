@@ -4,6 +4,7 @@ import { findDeployedContract } from '@midnight-ntwrk/midnight-js-contracts';
 import { useMidnight } from '../hooks/useMidnight';
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
+import * as ed from '@noble/ed25519';
 
 type ProveState = 'idle' | 'fetching' | 'proving' | 'submitting';
 
@@ -66,6 +67,11 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
       const proofProvider = await api.getProvingProvider(zkConfigProvider);
 
       const inMemoryPrivateState: Record<string, any> = {};
+      
+      const MOCK_ORACLE_PRIV = new Uint8Array(32).fill(1);
+      const msg = new Uint8Array(4);
+      new DataView(msg.buffer).setUint32(0, Number(nativeBalance), false); // Big-endian encoding
+      const mockSignature = await ed.signAsync(msg, MOCK_ORACLE_PRIV);
 
       const contractProviders = {
         publicDataProvider,
@@ -96,7 +102,7 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
         ],
         stateSignature: (witnessContext: any) => [
           witnessContext.currentPrivateState ?? undefined,
-          new Uint8Array(32) 
+          mockSignature 
         ]
       } as any; 
 

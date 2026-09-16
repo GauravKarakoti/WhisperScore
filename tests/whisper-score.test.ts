@@ -1,32 +1,32 @@
 import { describe, expect, test, beforeEach } from '@jest/globals';
 
 describe('WhisperScore Eligibility Contract (whisper_score.compact)', () => {
-  // Simulated Ledger State matching the counter approach
-  let ledger: {
-    requiredThreshold: number;
-    eligibleCount: number;
-  };
+  let ledger: { requiredThreshold: number; eligibleCount: number; oraclePublicKey: Uint8Array };
 
-  // Simulated Circuit Call (matching the updated contract behavior)
-  const checkEligibilityCircuit = (privateUserValue: number) => {
+  const checkEligibilityCircuit = (privateUserValue: number, signature: Uint8Array) => {
     const threshold = ledger.requiredThreshold;
     
-    // Privacy Constraint: Comparison happens locally
-    const isEligible = privateUserValue >= threshold;
+    const MAX_ALLOWED_BALANCE = 1000000000;
+    if (privateUserValue > MAX_ALLOWED_BALANCE) {
+      throw new Error("Assertion failed: Balance exceeds maximum allowed bounds");
+    }
     
-    // State Transition: Increment tally on the ledger if eligible using numeric increment
+    // Mock Oracle Signature Verification
+    if (signature.length !== 64) {
+      throw new Error("Spoofing detected: Invalid Oracle signature");
+    }
+    
+    const isEligible = privateUserValue >= threshold;
     const increment = isEligible ? 1 : 0;
     ledger.eligibleCount += increment;
-    
-    // Disclose output
     return isEligible;
   };
 
   beforeEach(() => {
-    // Simulate Contract Deployment
-    ledger = {
-      requiredThreshold: 700,
-      eligibleCount: 0
+    ledger = { 
+      requiredThreshold: 700, 
+      eligibleCount: 0, 
+      oraclePublicKey: new Uint8Array(32).fill(1) 
     };
   });
 

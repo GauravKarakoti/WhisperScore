@@ -9,6 +9,7 @@ import { createWallet, persistWalletState, unshieldedToken, type WalletContext }
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { WebSocket } from 'ws';
 import * as Rx from 'rxjs';
+import * as ed from '@noble/ed25519';
 
 // Midnight SDK imports
 import { deployContract } from '@midnight-ntwrk/midnight-js-contracts';
@@ -251,6 +252,12 @@ async function main() {
     : DEFAULT_INITIAL_THRESHOLD;
 
   console.log(`  Configured Public Threshold: ${initialThreshold.toLocaleString()}`);
+  
+  // Generate Mock Oracle Keypair
+  const MOCK_ORACLE_PRIV = new Uint8Array(32).fill(1);
+  const MOCK_ORACLE_PUB = await ed.getPublicKeyAsync(MOCK_ORACLE_PRIV);
+  console.log('  Mock Oracle Public Key Configured');
+
   process.stdout.write('  Generating initial DUST buffer...');
   await new Promise((r) => setTimeout(r, 6000));
   process.stdout.write(' done.\n');
@@ -263,12 +270,11 @@ async function main() {
     try {
       deployed = await deployContract(providers, {
         compiledContract: compiledContract as any,
-        args: [initialThreshold],
+        args: [initialThreshold, MOCK_ORACLE_PUB],
         privateStateId: PRIVATE_STATE_ID,
-        // Passes the initial state for the multi-chain setup
         initialPrivateState: {
           ethBalance: 0n,
-          signature: new Uint8Array(32),
+          signature: new Uint8Array(64), // Updated to 64 bytes
         },
       });
       break;

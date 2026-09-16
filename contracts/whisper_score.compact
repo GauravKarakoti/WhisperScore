@@ -4,21 +4,21 @@ import "std/crypto";
 
 export ledger requiredThreshold: Uint<32>;
 export ledger eligibleCount: Uint<32>;
+export ledger oraclePublicKey: Bytes<32>;
 
-constructor(initialThreshold: Uint<32>) {
+constructor(initialThreshold: Uint<32>, oraclePubKey: Bytes<32>) {
   requiredThreshold = disclose(initialThreshold);
   eligibleCount = 0;
+  oraclePublicKey = disclose(oraclePubKey);
 }
 
-// MULTI-CHAIN WITNESS: Read public state from another chain (e.g., Ethereum)
+// MULTI-CHAIN WITNESS: Read public state from another chain
 witness externalChainBalance(): Uint<32>;
-// Simulates an Affect Stream or Oracle signature verifying the external state
-witness stateSignature(): Bytes<32>; 
+// Real Ed25519 signatures require 64 bytes
+witness stateSignature(): Bytes<64>; 
 
 export circuit checkEligibility(): Boolean {
   const threshold = requiredThreshold;
-  
-  // Pull the multi-chain data privately into the local circuit
   const balance = externalChainBalance();
   const signature = stateSignature();
   
@@ -27,15 +27,11 @@ export circuit checkEligibility(): Boolean {
   assert(balance <= MAX_ALLOWED_BALANCE, "Balance exceeds maximum allowed bounds");
   
   // AFFECT STREAM INTEGRATION (SPOOFING PREVENTION)
-  // To prevent users from fabricating their balance, we cryptographically bind 
-  // the data to the Oracle's signature. We compute a Poseidon hash of the balance 
-  // to simulate verifying an authenticated Merkle Proof from the Affect Stream.
-  const balanceCommitment = crypto::poseidon([balance as Field]);
+  // Convert balance to 4 bytes to match the standard signing payload
+  const msg = balance as Bytes<4>;
   
-  // We assert the hash computation is valid and binds to the logic.
-  // (For Mainnet, replace this simulation with actual Ed25519 verification: 
-  // assert(crypto::ed25519_verify(ORACLE_PUBKEY, message, signature), "Invalid signature");)
-  assert(balanceCommitment != 0, "Spoofing detected: Invalid Oracle commitment");
+  // Cryptographically verify the Ed25519 signature from the trusted Oracle
+  assert(crypto::ed25519_verify(oraclePublicKey, msg, signature), "Spoofing detected: Invalid Oracle signature");
   
   // Compute the comparison privately
   const isEligible = balance >= threshold;

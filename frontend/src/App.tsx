@@ -15,7 +15,7 @@ function App() {
       <nav className="sticky top-0 z-50 border-b border-slate-800/60 bg-slate-950/70 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="WhisperScore Logo" className="h-20 w-auto" />
+            <img src="/logo.png" alt="WhisperScore Logo" className="h-12 w-auto object-contain drop-shadow-[0_0_15px_rgba(34,211,238,0.2)]" />
             <div className="text-2xl font-extrabold tracking-tight">
               Whisper<span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">Score</span>
             </div>

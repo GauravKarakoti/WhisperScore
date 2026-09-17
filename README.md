@@ -82,14 +82,15 @@ Summary of top changes made from user feedback:
 ## Level 6 Users
 See [`LAUNCH_USERS.md`](./LAUNCH_USERS.md)
 
-## Product X Thread
-[Product X Thread](https://x.com/GauravKara_koti/status/2098110310922199453?s=20)
+## Product X Account
+[Product X Account](https://x.com/WhisperScore)
 
 ## Brand Logo
 ![Logo](./frontend/public/logo.png)
 
 ## Demo Video & Screenshots
 ![Test Screenshot](./test.png)
+
 **Demo Video:** [PLACEHOLDER — Add the link after recording]
 
 ## Security Assumptions

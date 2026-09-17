@@ -8,6 +8,12 @@ import * as ed from '@noble/ed25519';
 
 type ProveState = 'idle' | 'fetching' | 'proving' | 'submitting';
 
+const PROVE_STEPS = [
+  { id: 'fetching', label: 'Syncing Shielded State', detail: 'Retrieving confidential UTXOs' },
+  { id: 'proving', label: 'Generating ZK Proof', detail: 'Computing circuit parameters locally' },
+  { id: 'submitting', label: 'Verifying On-Chain', detail: 'Submitting proof to Midnight Network' }
+];
+
 export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contractAddress }) => {
   const [proveState, setProveState] = useState<ProveState>('idle');
   const [txResult, setTxResult] = useState<{ hash: string; result: string } | null>(null);
@@ -39,7 +45,6 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
     setIsRevealed(false);
 
     try {
-      /* --- LOGIC REMAINS EXACTLY THE SAME --- */
       const api = providers as any;
       const config = await api.getConfiguration();
       const shieldedState = await api.getShieldedAddresses();
@@ -135,13 +140,14 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
     }
   };
 
-  const getButtonText = () => {
-    switch (proveState) {
-      case 'fetching': return 'Syncing Shielded State...';
-      case 'proving': return 'Computing ZK Proof...';
-      case 'submitting': return 'Awaiting Confirmation...';
-      default: return 'Generate & Verify ZK Proof';
-    }
+  const getStepStatus = (stepId: string) => {
+    const currentIndex = PROVE_STEPS.findIndex(s => s.id === proveState);
+    const stepIndex = PROVE_STEPS.findIndex(s => s.id === stepId);
+    
+    if (proveState === 'idle') return 'pending';
+    if (stepIndex < currentIndex || (txResult && stepIndex <= currentIndex)) return 'complete';
+    if (stepIndex === currentIndex) return 'active';
+    return 'pending';
   };
 
   return (
@@ -159,51 +165,98 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
         <p className="text-slate-400 text-sm">Verify your Power User status without exposing your exact wallet balance to the public.</p>
       </div>
       
-      <div className="flex flex-col gap-6 flex-1">
-        {/* Input Section */}
-        <div>
-          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-            Target Score Threshold
-          </label>
-          <div className="relative">
-            <input 
-              type="number" 
-              min="0" 
-              max="1000" 
-              value={thresholdInput}
-              onChange={(e) => setThresholdInput(e.target.value)}
-              disabled={proveState !== 'idle' || !providers}
-              className="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl pl-5 pr-16 py-3.5 text-slate-100 font-mono text-lg focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 disabled:opacity-50 transition-all shadow-inner"
-              placeholder="50"
-            />
-            <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-sm">
-              PTS
+      {/* Main Content Area - Centered Vertically */}
+      <div className="flex-1 flex flex-col">
+        <div className={`my-auto w-full space-y-6 transition-opacity duration-300 ${proveState !== 'idle' && !txResult ? 'opacity-40 pointer-events-none' : ''}`}>
+          
+          {/* Input Section */}
+          <div>
+            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              Target Score Threshold
+            </label>
+            <div className="relative">
+              <input 
+                type="number" 
+                min="0" 
+                max="1000" 
+                value={thresholdInput}
+                onChange={(e) => setThresholdInput(e.target.value)}
+                disabled={proveState !== 'idle' || !providers}
+                className="w-full bg-slate-950/80 border border-slate-700/80 rounded-xl pl-5 pr-16 py-3.5 text-slate-100 font-mono text-lg focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 disabled:opacity-50 transition-all shadow-inner"
+                placeholder="50"
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 font-semibold text-sm">
+                PTS
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Tiers */}
-        <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-5">
-          <strong className="block text-xs uppercase tracking-wider text-slate-400 mb-3">Score Tiers</strong>
-          <div className="grid grid-cols-3 gap-3 text-center text-xs font-semibold">
-            <div className="bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-lg py-2.5">
-              Bronze <span className="block mt-0.5 opacity-70 font-mono">1–49</span>
-            </div>
-            <div className="bg-slate-500/10 border border-slate-500/20 text-slate-300 rounded-lg py-2.5">
-              Silver <span className="block mt-0.5 opacity-70 font-mono">50–99</span>
-            </div>
-            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-lg py-2.5">
-              Gold <span className="block mt-0.5 opacity-70 font-mono">100+</span>
+          {/* Tiers Context Box */}
+          <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-5">
+            <strong className="block text-xs uppercase tracking-wider text-slate-400 mb-3">Score Tiers</strong>
+            <div className="grid grid-cols-3 gap-3 text-center text-xs font-semibold">
+              <div className="bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-lg py-2.5">
+                Bronze <span className="block mt-0.5 opacity-70 font-mono">1–49</span>
+              </div>
+              <div className="bg-slate-500/10 border border-slate-500/20 text-slate-300 rounded-lg py-2.5">
+                Silver <span className="block mt-0.5 opacity-70 font-mono">50–99</span>
+              </div>
+              <div className="bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-lg py-2.5">
+                Gold <span className="block mt-0.5 opacity-70 font-mono">100+</span>
+              </div>
             </div>
           </div>
+
+          {/* Verification Details */}
+          <div className="bg-slate-900/20 border border-slate-800/50 rounded-xl p-4">
+            <div className="flex justify-between items-center text-sm mb-2">
+              <span className="text-slate-500">Proof Protocol</span>
+              <span className="text-slate-300 font-mono text-xs">ZK-SNARK</span>
+            </div>
+            <div className="flex justify-between items-center text-sm">
+              <span className="text-slate-500">Data Exposure</span>
+              <span className="text-emerald-400 font-mono text-xs flex items-center gap-1">
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                Zero
+              </span>
+            </div>
+          </div>
+
         </div>
 
-        {/* Dynamic State Rendering */}
-        <div className="mt-auto">
+        {/* Dynamic State Rendering - Anchored to bottom */}
+        <div className="mt-8 min-h-[170px] flex flex-col justify-end">
           {errorMsg && (
-            <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+            <div className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm animate-in fade-in zoom-in-95">
               <strong className="block text-red-300 mb-1">Verification Failed</strong>
               <p>{errorMsg}</p>
+            </div>
+          )}
+
+          {proveState !== 'idle' && !txResult && (
+            <div className="flex flex-col gap-4 p-6 bg-slate-900/60 border border-slate-800 rounded-xl mb-4 animate-in fade-in slide-in-from-bottom-4 h-full justify-center">
+              {PROVE_STEPS.map((step) => {
+                const status = getStepStatus(step.id);
+                return (
+                  <div key={step.id} className={`flex items-center gap-4 transition-opacity duration-500 ${status === 'pending' ? 'opacity-40' : 'opacity-100'}`}>
+                    <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center">
+                      {status === 'complete' ? (
+                        <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                      ) : status === 'active' ? (
+                        <div className="w-5 h-5 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin"></div>
+                      ) : (
+                        <div className="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
+                      )}
+                    </div>
+                    <div>
+                      <div className={`text-sm font-semibold ${status === 'active' ? 'text-cyan-400' : 'text-slate-300'}`}>{step.label}</div>
+                      {status === 'active' && <div className="text-xs text-slate-500 mt-0.5">{step.detail}</div>}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 
@@ -222,53 +275,44 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
                 </p>
               </div>
               
-              {/* Scratch-off Reveal UI */}
+              {/* Encrypted Reveal UI */}
               <div 
                 className={`relative w-full h-16 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-500 overflow-hidden ${
                   isRevealed 
                     ? 'bg-emerald-950/50 border border-emerald-500/50 shadow-[0_0_20px_rgba(16,185,129,0.15)]' 
-                    : 'bg-slate-800 border border-slate-600 hover:bg-slate-700'
+                    : 'bg-slate-900 border border-slate-700 hover:border-cyan-500/50 hover:shadow-[0_0_15px_rgba(6,182,212,0.15)] group'
                 }`}
                 onClick={() => setIsRevealed(true)}
               >
                 {!isRevealed ? (
-                  <div className="absolute inset-0 flex items-center justify-center bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.03)_10px,rgba(255,255,255,0.03)_20px)]">
-                    <span className="font-bold text-slate-300 tracking-wide text-sm flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                      Click to Reveal ZK Result
+                  <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-0 opacity-20 bg-[linear-gradient(0deg,transparent_24%,rgba(34,211,238,0.3)_25%,rgba(34,211,238,0.3)_26%,transparent_27%,transparent_74%,rgba(34,211,238,0.3)_75%,rgba(34,211,238,0.3)_76%,transparent_77%,transparent)] bg-[length:100%_4px] animate-scan"></div>
+                    <span className="font-mono font-bold text-cyan-400 tracking-wider text-sm flex items-center gap-2 group-hover:scale-105 transition-transform z-10">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                      DECRYPT ZK RESULT
                     </span>
                   </div>
                 ) : (
                   <div className="animate-in zoom-in duration-300 font-mono text-xl font-bold text-emerald-400 flex items-center gap-3">
-                    Result: <span className="text-white bg-emerald-500/20 px-3 py-1 rounded-lg">{txResult.result}</span>
+                    Result: <span className="text-white bg-emerald-500/20 px-3 py-1 rounded-lg border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">{txResult.result}</span>
                   </div>
                 )}
               </div>
               
               <button 
                 onClick={() => { setTxResult(null); setIsRevealed(false); }}
-                className="mt-4 w-full py-3 text-sm text-slate-400 hover:text-white transition-colors"
+                className="mt-6 w-full py-3 text-sm font-semibold text-slate-500 hover:text-slate-300 transition-colors"
               >
-                Verify another score
+                Verify another threshold
               </button>
             </div>
           ) : (
             <button 
               onClick={handleVerify} 
               disabled={proveState !== 'idle' || !providers}
-              className="action-btn"
+              className={`action-btn ${proveState !== 'idle' ? 'hidden' : ''}`}
             >
-              {proveState !== 'idle' ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  {getButtonText()}
-                </>
-              ) : (
-                getButtonText()
-              )}
+              Generate & Verify ZK Proof
             </button>
           )}
         </div>

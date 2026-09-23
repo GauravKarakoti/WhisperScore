@@ -73,7 +73,10 @@ See [`docs/USAGE.md`](./docs/USAGE.md)
 WhisperScore is a decentralized omni-chain reputation protocol built on the Midnight Network that allows users to cryptographically prove their cumulative "power user" status across multiple fragmented Web3 wallets without doxxing their transaction history or exposing themselves to graph-based wallet surveillance. By aggregating state data from various addresses locally, WhisperScore utilizes a Midnight Compact circuit to verify that the user's combined metrics meet a specific smart contract threshold, subsequently emitting a shielded binary attestation to the public ledger. This provides dApps, DAOs, and lending platforms with a highly reliable, Sybil-resistant credential while empowering users to leverage their hard-earned cross-chain reputation without sacrificing their financial privacy.
 
 ## Feedback & Iterations
-See [`docs/FEEDBACK.md`](./docs/FEEDBACK.md) for full details.
+Used [Google Form](https://docs.google.com/forms/d/e/1FAIpQLSegB7N-29VVWDZp5DjP-gdV84akNG3jNl_Dx4Nqdw9MJw7h9Q/viewform?usp=publish-editor) to collect the Feedback.
+
+See [Responses](https://docs.google.com/spreadsheets/d/1Ng_S_HdRoeGhBybpHhnLxXL8RHFmQsH61a_vpXKM6w8/edit?usp=sharing) and [`docs/FEEDBACK.md`](./docs/FEEDBACK.md) for full details.
+
 Summary of top changes made from user feedback:
 * **Gas Onboarding:** Added a tDUST faucet banner to prevent zero-gas transaction failures for first-time Preprod testers.
 * **Prover Latency & UI Locking:** Implemented a frontend loading spinner and disabled button states during local ZK proof generation to prevent accidental double-clicking.

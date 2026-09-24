@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import wasm from 'vite-plugin-wasm';
-import path from "path"
+import { fileURLToPath, URL } from 'url';
 
 export default defineConfig({
   plugins: [
@@ -24,16 +24,20 @@ export default defineConfig({
       '@midnight-ntwrk/onchain-runtime-v3',
     ],
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      // Replaces __dirname to fix the configLoader: 'native' warning
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   optimizeDeps: {
-    exclude: ['@midnight-ntwrk/midnight-ledger-wasm'],
-    esbuildOptions: {
-      target: 'esnext'
-    }
+    // Required to prevent Vite from improperly pre-bundling the Midnight WASM ledger
+    exclude: ['@midnight-ntwrk/midnight-ledger-wasm']
+    // Removed the deprecated 'esbuildOptions' block. Vite now uses Rolldown 
+    // and natively respects the build.target setting below for modern features.
   },
   build: {
-    target: 'esnext'
+    target: 'esnext',
+    // Switches the CSS minifier to esbuild to bypass the lightningcss syntax crash
+    // caused by the Shadcn/Tailwind v4 CSS variables
+    cssMinify: 'esbuild'
   }
 });

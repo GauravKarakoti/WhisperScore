@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import wasm from 'vite-plugin-wasm';
+import path from "path"
 
 export default defineConfig({
   plugins: [
@@ -22,6 +23,9 @@ export default defineConfig({
       '@midnight-ntwrk/midnight-js-contracts',
       '@midnight-ntwrk/onchain-runtime-v3',
     ],
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
   optimizeDeps: {
     exclude: ['@midnight-ntwrk/midnight-ledger-wasm'],

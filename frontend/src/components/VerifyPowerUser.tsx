@@ -5,6 +5,9 @@ import { useMidnight } from '../hooks/useMidnight';
 import { indexerPublicDataProvider } from '@midnight-ntwrk/midnight-js-indexer-public-data-provider';
 import { FetchZkConfigProvider } from '@midnight-ntwrk/midnight-js-fetch-zk-config-provider';
 import * as ed from '@noble/ed25519';
+import { Card } from './ui/card.js';
+import { CheckCircle2, Eye, Loader2, RotateCcw, ShieldCheck } from 'lucide-react';
+import { Button } from './ui/button.js';
 
 type ProveState = 'idle' | 'fetching' | 'proving' | 'submitting';
 
@@ -151,14 +154,12 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
   };
 
   return (
-    <div className="p-8 flex flex-col h-full relative">
+    <Card className="p-8 flex flex-col h-full relative bg-zinc-900/60 border-zinc-700/50 backdrop-blur-xl shadow-2xl overflow-hidden">
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <div className="p-2 rounded-lg bg-indigo-500/20 text-indigo-400">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
+            <ShieldCheck className="w-6 h-6" />
           </div>
           <h3 className="text-2xl font-bold text-white">Prove Reputation</h3>
         </div>
@@ -216,7 +217,7 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
             <div className="flex justify-between items-center text-sm">
               <span className="text-slate-500">Data Exposure</span>
               <span className="text-emerald-400 font-mono text-xs flex items-center gap-1">
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                <ShieldCheck className="w-3.5 h-3.5" />
                 Zero
               </span>
             </div>
@@ -241,11 +242,9 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
                   <div key={step.id} className={`flex items-center gap-4 transition-opacity duration-500 ${status === 'pending' ? 'opacity-40' : 'opacity-100'}`}>
                     <div className="w-6 h-6 flex-shrink-0 flex items-center justify-center">
                       {status === 'complete' ? (
-                        <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                        </div>
+                        <CheckCircle2 className="w-6 h-6 text-emerald-500" />
                       ) : status === 'active' ? (
-                        <div className="w-5 h-5 rounded-full border-2 border-cyan-500 border-t-transparent animate-spin"></div>
+                        <Loader2 className="w-5 h-5 text-cyan-500 animate-spin" />
                       ) : (
                         <div className="w-2.5 h-2.5 rounded-full bg-slate-600"></div>
                       )}
@@ -264,7 +263,7 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="mb-4 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-emerald-400">✅</span>
+                  <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                   <strong className="text-emerald-300 text-sm">On-Chain Confirmation</strong>
                 </div>
                 <p className="text-xs text-slate-400 flex items-center justify-between">
@@ -288,7 +287,7 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
                   <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
                     <div className="absolute inset-0 opacity-20 bg-[linear-gradient(0deg,transparent_24%,rgba(34,211,238,0.3)_25%,rgba(34,211,238,0.3)_26%,transparent_27%,transparent_74%,rgba(34,211,238,0.3)_75%,rgba(34,211,238,0.3)_76%,transparent_77%,transparent)] bg-[length:100%_4px] animate-scan"></div>
                     <span className="font-mono font-bold text-cyan-400 tracking-wider text-sm flex items-center gap-2 group-hover:scale-105 transition-transform z-10">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                      <Eye className="w-4 h-4" />
                       DECRYPT ZK RESULT
                     </span>
                   </div>
@@ -299,24 +298,25 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
                 )}
               </div>
               
-              <button 
+              <Button 
+                variant="ghost"
                 onClick={() => { setTxResult(null); setIsRevealed(false); }}
-                className="mt-6 w-full py-3 text-sm font-semibold text-slate-500 hover:text-slate-300 transition-colors"
+                className="mt-6 w-full py-6 text-sm font-semibold text-slate-500 hover:text-slate-300 transition-colors"
               >
-                Verify another threshold
-              </button>
+                <RotateCcw className="w-4 h-4 mr-2" /> Verify another threshold
+              </Button>
             </div>
           ) : (
-            <button 
+            <Button 
               onClick={handleVerify} 
               disabled={proveState !== 'idle' || !providers}
-              className={`action-btn ${proveState !== 'idle' ? 'hidden' : ''}`}
+              className={`w-full py-6 text-base bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 transition-all duration-300 ${proveState !== 'idle' ? 'hidden' : ''}`}
             >
               Generate & Verify ZK Proof
-            </button>
+            </Button>
           )}
         </div>
       </div>
-    </div>
+    </Card>
   );
 };

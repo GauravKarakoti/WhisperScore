@@ -1,5 +1,8 @@
 import React from 'react';
 import { useMidnight } from '../hooks/useMidnight';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Wallet, Shield, Zap, Lock, AlertCircle, ExternalLink, CheckCircle2, Server } from 'lucide-react';
 
 export const WalletConnect: React.FC = () => {
   const { address, error, connectWallet, disconnectWallet } = useMidnight();
@@ -7,15 +10,13 @@ export const WalletConnect: React.FC = () => {
   const isMissingWallet = error?.toLowerCase().includes('install') || error?.toLowerCase().includes('not found');
 
   return (
-    <div className="p-8 flex flex-col h-full relative">
+    <Card className="p-8 flex flex-col h-full relative bg-zinc-900/60 border-zinc-700/50 backdrop-blur-xl shadow-2xl overflow-hidden">
       {/* Header */}
       <div className="mb-8">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-2xl font-bold text-white mb-1">Wallet Connection</h3>
-          <div className={`p-2 rounded-xl border transition-colors duration-500 ${address ? 'bg-indigo-500/10 border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-slate-800/50 border-slate-700'}`}>
-            <svg className={`w-6 h-6 transition-colors duration-500 ${address ? 'text-indigo-400' : 'text-slate-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-            </svg>
+          <div className={`p-2.5 rounded-xl border transition-colors duration-500 ${address ? 'bg-indigo-500/10 border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-slate-800/50 border-slate-700'}`}>
+            <Wallet className={`w-6 h-6 transition-colors duration-500 ${address ? 'text-indigo-400' : 'text-slate-500'}`} />
           </div>
         </div>
         <p className="text-slate-400 text-sm">Connect Lace to access Midnight Preprod</p>
@@ -24,19 +25,21 @@ export const WalletConnect: React.FC = () => {
       {/* Error State */}
       {error && (
         <div className="p-4 mb-6 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
-          <span className="text-xl">⚠️</span>
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
           <div className="flex-1">
             <strong className="block text-red-300 text-sm mb-0.5">Connection Error</strong>
             <p className="text-red-400/80 text-sm">{isMissingWallet ? 'Lace wallet extension not detected.' : error}</p>
             {isMissingWallet && (
-              <a 
-                href="https://www.lace.io/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="mt-2 inline-block px-3 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 text-xs font-semibold rounded-lg transition-colors border border-red-500/30"
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-3 bg-red-500/10 border-red-500/20 hover:bg-red-500/20 hover:text-red-300 text-red-400 h-8"
+                asChild
               >
-                Install Lace Wallet &rarr;
-              </a>
+                <a href="https://www.lace.io/" target="_blank" rel="noopener noreferrer">
+                  Install Lace Wallet <ExternalLink className="w-3 h-3 ml-2" />
+                </a>
+              </Button>
             )}
           </div>
         </div>
@@ -48,15 +51,17 @@ export const WalletConnect: React.FC = () => {
           {!address ? (
             <div className="flex flex-col gap-4">
               <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-900/50 border border-slate-800/80 hover:bg-slate-800/80 transition-colors group">
-                <div className="p-2.5 bg-cyan-500/10 text-cyan-400 rounded-lg text-lg group-hover:scale-110 transition-transform">🔒</div>
+                <div className="p-2.5 bg-cyan-500/10 text-cyan-400 rounded-lg group-hover:scale-110 transition-transform">
+                  <Lock className="w-5 h-5" />
+                </div>
                 <div>
                   <h4 className="text-slate-200 font-semibold mb-1 text-sm">Zero-Knowledge</h4>
                   <p className="text-slate-400 text-xs leading-relaxed">Prove your score seamlessly without revealing your underlying transaction history.</p>
                 </div>
               </div>
               <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-900/50 border border-slate-800/80 hover:bg-slate-800/80 transition-colors group">
-                <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg text-lg group-hover:scale-110 transition-transform relative">
-                  🛡️
+                <div className="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg group-hover:scale-110 transition-transform relative">
+                  <Shield className="w-5 h-5" />
                   <div className="absolute inset-0 border border-indigo-400/50 rounded-lg animate-ping opacity-20"></div>
                 </div>
                 <div>
@@ -65,7 +70,9 @@ export const WalletConnect: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-900/50 border border-slate-800/80 hover:bg-slate-800/80 transition-colors group">
-                <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg text-lg group-hover:scale-110 transition-transform">⚡</div>
+                <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg group-hover:scale-110 transition-transform">
+                  <Zap className="w-5 h-5" />
+                </div>
                 <div>
                   <h4 className="text-slate-200 font-semibold mb-1 text-sm">Local Execution</h4>
                   <p className="text-slate-400 text-xs leading-relaxed">Cryptographic proofs are generated entirely on your device.</p>
@@ -76,6 +83,7 @@ export const WalletConnect: React.FC = () => {
             <div className="flex flex-col gap-5">
               <div className="flex flex-col items-center justify-center p-6 bg-slate-900/40 border border-slate-800/80 rounded-2xl shadow-inner animate-in zoom-in-95 duration-500 relative overflow-hidden">
                 <div className="absolute inset-0 bg-shimmer-gradient animate-shimmer -translate-x-full"></div>
+                <CheckCircle2 className="w-10 h-10 text-emerald-500 mb-3 opacity-80 relative z-10" />
                 <h4 className="text-slate-200 font-semibold text-lg mb-1 relative z-10">Connected Successfully</h4>
                 <div className="px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg font-mono text-sm text-cyan-400 tracking-wider mb-4 relative z-10 shadow-[0_0_10px_rgba(34,211,238,0.1)]">
                   {address.slice(0, 12)}...{address.slice(-10)}
@@ -93,7 +101,7 @@ export const WalletConnect: React.FC = () => {
               <div className="bg-slate-900/20 border border-slate-800/50 rounded-2xl p-6 relative overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl -translate-y-1/2 translate-x-1/2"></div>
                 <h5 className="text-slate-300 font-semibold mb-4 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                  <Server className="w-5 h-5 text-indigo-400" />
                   Shielded Data Vault
                 </h5>
                 <div className="space-y-4">
@@ -119,16 +127,20 @@ export const WalletConnect: React.FC = () => {
       {/* Footer / Actions - Anchored to bottom */}
       <div className="mt-8">
         {!address ? (
-          <button onClick={connectWallet} className="action-btn">
+          <Button 
+            onClick={connectWallet} 
+            className="w-full py-6 text-base bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white rounded-xl font-semibold shadow-lg shadow-indigo-500/20 transition-all duration-300"
+          >
             Connect Lace Wallet
-          </button>
+          </Button>
         ) : (
-          <button 
+          <Button 
+            variant="outline"
             onClick={disconnectWallet} 
-            className="w-full py-3.5 px-4 bg-slate-900 border border-slate-700 hover:bg-slate-800 hover:border-red-500/50 hover:text-red-400 text-slate-300 rounded-xl font-semibold transition-all duration-300"
+            className="w-full py-6 text-base bg-slate-900 border-slate-700 hover:bg-slate-800 hover:border-red-500/50 hover:text-red-400 text-slate-300 rounded-xl font-semibold transition-all duration-300"
           >
             Disconnect Wallet
-          </button>
+          </Button>
         )}
 
         <div className="mt-6 pt-6 border-t border-slate-800/60 flex justify-between items-center text-sm">
@@ -144,6 +156,6 @@ export const WalletConnect: React.FC = () => {
           </a>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };

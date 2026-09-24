@@ -8,7 +8,7 @@
 ## Contract Address
 | Network  | Address                                                              |
 |----------|----------------------------------------------------------------------|
-| Preview  | `16be13f4d0aa666121fc6be71836e99d88cdbb1ce25e2438c559304d7a9cf10f`   |
+| Preview  | `f300c8ef23885f1cc04e6879ec5085f0845eff81c79d5ef6066f176af11df09f`   |
 | Preprod  | `32587300f95d1620fecbeb4914ef1be44b95e7a3cbd659e661d38ba83827871d`   |
 
 ## Level 5 - User Validation & Iteration
@@ -84,6 +84,8 @@ Summary of top changes made from user feedback:
 
 ## Level 6 Users
 See [`LAUNCH_USERS.md`](./LAUNCH_USERS.md)
+
+Check out the [Preprod User Sheet](https://docs.google.com/spreadsheets/d/1OOImGqLy3o7SM8wYcG_yO7QI2mCXfGPWkSJ32rJjUDg/edit?usp=sharing) to view all current users.
 
 ## Product X Account
 [Product X Account](https://x.com/WhisperScore)

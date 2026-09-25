@@ -96,7 +96,7 @@ Check out the [Preprod User Sheet](https://docs.google.com/spreadsheets/d/1OOImG
 ## Demo Video & Screenshots
 ![Test Screenshot](./test.png)
 
-**Demo Video:** [PLACEHOLDER — Add the link after recording]
+**[Demo Video](https://youtu.be/Tx9Py_TCe5o)**
 
 ## Security Assumptions
 * **Circuit Bounds:** The `checkEligibility` circuit enforces a hardcap on `externalChainBalance` (`1,000,000,000`) to prevent overflow exploits during the Field-to-Uint conversion.

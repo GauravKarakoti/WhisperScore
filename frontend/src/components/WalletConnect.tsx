@@ -1,13 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useMidnight } from '../hooks/useMidnight';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Wallet, Shield, Zap, Lock, AlertCircle, ExternalLink, CheckCircle2, Server } from 'lucide-react';
+import { Wallet, Shield, Zap, Lock, AlertCircle, ExternalLink, CheckCircle2, Server, Copy, Check } from 'lucide-react';
 
 export const WalletConnect: React.FC = () => {
   const { address, error, connectWallet, disconnectWallet } = useMidnight();
+  const [copied, setCopied] = useState(false);
 
   const isMissingWallet = error?.toLowerCase().includes('install') || error?.toLowerCase().includes('not found');
+
+  const handleCopyAddress = () => {
+    if (address) {
+      navigator.clipboard.writeText(address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   return (
     <Card className="p-8 flex flex-col h-full relative bg-zinc-900/60 border-zinc-700/50 backdrop-blur-xl shadow-2xl overflow-hidden">
@@ -85,8 +94,21 @@ export const WalletConnect: React.FC = () => {
                 <div className="absolute inset-0 bg-shimmer-gradient animate-shimmer -translate-x-full"></div>
                 <CheckCircle2 className="w-10 h-10 text-emerald-500 mb-3 opacity-80 relative z-10" />
                 <h4 className="text-slate-200 font-semibold text-lg mb-1 relative z-10">Connected Successfully</h4>
-                <div className="px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg font-mono text-sm text-cyan-400 tracking-wider mb-4 relative z-10 shadow-[0_0_10px_rgba(34,211,238,0.1)]">
-                  {address.slice(0, 12)}...{address.slice(-10)}
+                
+                {/* Interactive Copyable Address */}
+                <div 
+                  onClick={handleCopyAddress}
+                  className="group cursor-pointer flex items-center justify-between gap-3 px-4 py-2 bg-slate-950 border border-slate-800 rounded-lg mb-4 relative z-10 shadow-[0_0_10px_rgba(34,211,238,0.1)] hover:border-cyan-500/50 transition-colors"
+                  title="Copy Wallet Address"
+                >
+                  <span className="font-mono text-sm text-cyan-400 tracking-wider">
+                    {address.slice(0, 12)}...{address.slice(-10)}
+                  </span>
+                  {copied ? (
+                    <Check className="w-4 h-4 text-emerald-400" />
+                  ) : (
+                    <Copy className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 transition-colors" />
+                  )}
                 </div>
                 
                 <div className="w-full flex justify-between items-center p-3 bg-slate-950/50 rounded-xl border border-slate-800/50 relative z-10">

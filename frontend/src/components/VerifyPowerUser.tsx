@@ -32,6 +32,12 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
     resetProof();
   };
 
+  const setTier = (val: string) => {
+    if (proveState === 'idle' && providers) {
+      setThresholdInput(val);
+    }
+  };
+
   const getStepStatus = (stepId: string) => {
     const currentIndex = PROVE_STEPS.findIndex(s => s.id === proveState);
     const stepIndex = PROVE_STEPS.findIndex(s => s.id === stepId);
@@ -100,19 +106,34 @@ export const VerifyPowerUser: React.FC<{ contractAddress: string }> = ({ contrac
             )}
           </div>
 
-          {/* Tiers Context Box */}
+          {/* Interactive Tiers Context Box */}
           <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-5">
-            <strong className="block text-xs uppercase tracking-wider text-slate-400 mb-3">Score Tiers</strong>
+            <div className="flex justify-between items-center mb-3">
+              <strong className="block text-xs uppercase tracking-wider text-slate-400">Quick Select Tiers</strong>
+              <span className="text-[10px] text-slate-500 uppercase">Click to set</span>
+            </div>
             <div className="grid grid-cols-3 gap-3 text-center text-xs font-semibold">
-              <div className="bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-lg py-2.5">
+              <button 
+                onClick={() => setTier('49')}
+                disabled={proveState !== 'idle' || !providers}
+                className="bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-lg py-2.5 hover:bg-orange-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-orange-500"
+              >
                 Bronze <span className="block mt-0.5 opacity-70 font-mono">1–49</span>
-              </div>
-              <div className="bg-slate-500/10 border border-slate-500/20 text-slate-300 rounded-lg py-2.5">
+              </button>
+              <button 
+                onClick={() => setTier('99')}
+                disabled={proveState !== 'idle' || !providers}
+                className="bg-slate-500/10 border border-slate-500/20 text-slate-300 rounded-lg py-2.5 hover:bg-slate-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-slate-500"
+              >
                 Silver <span className="block mt-0.5 opacity-70 font-mono">50–99</span>
-              </div>
-              <div className="bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-lg py-2.5">
+              </button>
+              <button 
+                onClick={() => setTier('150')}
+                disabled={proveState !== 'idle' || !providers}
+                className="bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-lg py-2.5 hover:bg-amber-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-1 focus:ring-amber-500"
+              >
                 Gold <span className="block mt-0.5 opacity-70 font-mono">100+</span>
-              </div>
+              </button>
             </div>
           </div>
 

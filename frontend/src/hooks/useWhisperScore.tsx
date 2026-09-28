@@ -14,7 +14,7 @@ export function useWhisperProof(contractAddress: string) {
   const [txResult, setTxResult] = useState<{ hash: string; result: string } | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const generateProof = async (threshold: number) => {
+  const generateProof = async (_threshold: number) => {
     if (!providers) {
       setErrorMsg("Wallet disconnected. Please connect your Lace wallet to proceed.");
       return;

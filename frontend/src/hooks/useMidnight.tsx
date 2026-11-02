@@ -23,15 +23,21 @@ export const MidnightProvider: React.FC<{ children: ReactNode }> = ({ children }
       setError(null);
       
       const injectedWallets = (window as any).midnight ? Object.values((window as any).midnight) : [];
-      const laceConnector: any = injectedWallets.find(
-        (wallet: any) => wallet.rdns === 'io.lace.wallet' || wallet.name === 'lace'
-      );
+      // Prefer Lace, otherwise use any other DApp Connector v4 wallet (e.g. 1AM).
+      const connector: any =
+        injectedWallets.find(
+          (wallet: any) => wallet.rdns === 'io.lace.wallet' || wallet.name === 'lace'
+        ) ??
+        injectedWallets.find(
+          (wallet: any) =>
+            typeof wallet?.connect === 'function' && String(wallet?.apiVersion).startsWith('4')
+        );
       
-      if (!laceConnector) {
-        throw new Error("Lace wallet is not installed or Midnight network is unsupported.");
+      if (!connector) {
+        throw new Error("No Midnight wallet is installed or Midnight network is unsupported.");
       }
 
-      const api = await laceConnector.connect('preprod');
+      const api = await connector.connect('preprod');
       setProviders(api);
       
       const { unshieldedAddress } = await api.getUnshieldedAddress();
